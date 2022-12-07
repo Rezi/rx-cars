@@ -1,18 +1,10 @@
-# create-svelte
+# rx cars
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+Educational material for learning reactiveX in a visual way. Rx operators are animated and visualized in form of cars on road, including traffic lights etc.
 
-## Creating a project
+With Rx cars, rx operators are easy to understand.
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+More implemented animation for more operators will be added over time.
 
 ## Developing
 
