@@ -1,0 +1,29 @@
+*,
+*:after,
+*:before {
+	box-sizing: inherit;
+}
+
+html {
+	box-sizing: border-box;
+
+	font-size: 8px;
+}
+
+@media screen and (min-width: 320px) {
+	html {
+		font-size: calc(8px + 2 * ((100vw - 320px) / 960));
+	}
+}
+
+@media screen and (min-width: 1280px) {
+	html {
+		font-size: calc(10px + 50 * ((100vw - 1280px) / 10000));
+	}
+}
+
+@media screen and (min-width: 11280px) {
+	html {
+		font-size: 60px;
+	}
+}
