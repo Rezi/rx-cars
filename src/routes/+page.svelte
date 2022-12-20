@@ -1,7 +1,8 @@
 <nav />
 
 <main>
-	<h1>RX CARS</h1>
+	<h1 class="title">ReactiveX Cars</h1>
+	<h3 class="subtitle">JS Reactive streams explained by animated traffic situations</h3>
 
 	<p class="how-to">
 		Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos nostrum voluptatem doloribus
@@ -70,7 +71,7 @@
 				<li><a class="disabled" href="/operators/exhaust-map">exhaustMap </a></li>
 				<li><a class="disabled" href="/operators/expand">expand </a></li>
 				<li><a class="disabled" href="/operators/group-by">groupBy </a></li>
-				<li><a class="disabled" href="/operators/map">map </a></li>
+				<li><a href="/operators/map">map </a></li>
 				<li><a href="/operators/merge-map">mergeMap (FlatMap)</a></li>
 				<li><a class="disabled" href="/operators/merge-scan">mergeScan</a></li>
 				<li><a class="disabled" href="/operators/pairwise">pairwise </a></li>
@@ -142,7 +143,7 @@
 
 			<ul>
 				<li><a class="disabled" href="/operators/tap">tap</a></li>
-				<li><a class="disabled" href="/operators/delay">delay</a></li>
+				<li><a href="/operators/delay">delay</a></li>
 				<li><a class="disabled" href="/operators/delay-when">delayWhen</a></li>
 				<li><a class="disabled" href="/operators/dematerialize">dematerialize</a></li>
 				<li><a class="disabled" href="/operators/materialize">materialize</a></li>
@@ -181,12 +182,18 @@
 
 <style type="text/scss">
 	main {
+		padding: 1rem;
 		margin: 0 auto;
 		max-width: 80rem;
 
-		h1 {
+		.title {
 			text-align: center;
-			margin: 5rem 0rem;
+			margin: 5rem 0rem 1rem;
+		}
+
+		.subtitle {
+			text-align: center;
+			margin-bottom: 5rem;
 		}
 	}
 

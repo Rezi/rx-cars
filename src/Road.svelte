@@ -5,6 +5,7 @@
 	export let height = 0;
 	export let isOneLane = false;
 	export let rotation = 0;
+	export let hasMark = true;
 </script>
 
 <div
@@ -13,6 +14,7 @@
 	style="--road-width: {width}px;
 --road-height: {height}px;left:{x}px; top:{y}px; transform:translateX(-50%) rotate({rotation}deg)"
 >
+	<div class:operations={hasMark} />
 	<slot name="onroad" />
 </div>
 
@@ -27,7 +29,23 @@
 		top: 2rem;
 	}
 
+	.operations {
+		--padding: 2rem;
+		width: 3rem;
+		height: 3rem;
+		position: absolute;
+		left: calc(var(--road-width) + 3.5rem);
+		top: calc(-1 * var(--padding));
+
+		border: solid black;
+		border-width: 0 1rem 1rem 0;
+		display: inline-block;
+		padding: 3px;
+		transform: rotate(135deg);
+	}
+
 	.road {
+		border-top: 1px solid;
 		width: var(--road-width);
 		height: var(--road-height);
 		background: #eee;

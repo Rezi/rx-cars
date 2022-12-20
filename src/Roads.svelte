@@ -48,7 +48,7 @@
 			out:fade
 		>
 			{#if road.id}
-				<Road x={0} y={0} width={roadWidth} height={height * 1.7} rotation={-45}>
+				<Road x={0} y={0} width={roadWidth} height={height * 1.7} rotation={-45} hasMark={false}>
 					<div slot="onroad"><slot cars={carStreams[road.id]} roadId={road.id} /></div>
 				</Road>
 			{/if}

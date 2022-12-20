@@ -27,6 +27,33 @@
 	export let width = 0;
 	export let height = 0;
 
+	let codeExamples: string[] = [
+		`content_copyopen_in_new
+import { fromEvent, concatMap, interval, take } from 'rxjs';
+ 
+const clicks = fromEvent(document, 'click');
+const result = clicks.pipe(
+  concatMap(ev => interval(1000).pipe(take(4)))
+);
+result.subscribe(x => console.log(x));
+ 
+// Results in the following:
+// (results are not concurrent)
+// For every click on the "document" it will emit values 0 to 3 spaced
+// on a 1000ms interval
+// one click = 1000ms-> 0 -1000ms-> 1 -1000ms-> 2 -1000ms-> 3`
+	];
+
+	let carCodeExamples: string[] = [
+		/* `const carStream:Observble<Car> = stream;
+const intervalStream:<Observble:TrafficLightsValue>;
+const buffered = carStream.pipe(buffer(intervalStream));` */
+	];
+
+	let freeText = `Projects each source value to an Observable which is merged in the output Observable, in a serialized fashion waiting for each one to complete before merging the next.
+	
+In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output stream. Once the first substream is closed, second substream is subscribed and cars from it are emited to the output stream and so on`;
+
 	let streamsRemovedCount: number;
 	let autoresetTimer: ReturnType<typeof setTimeout>;
 
@@ -197,14 +224,12 @@
 		<Road x={width / 2} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
 			<div slot="decription-left">
 				<Description
-					title="Cars intervals:"
+					intervalsTitle="Substream intervals:"
 					streamItems={mainRoadStreamDefinition}
-					code={`
-const clicks = fromEvent(document, 'click');
-const intervalEvents = interval(1000);
-const buffered = intervalEvents.pipe(buffer(clicks));
-buffered.subscribe(x => console.log(x));			
-										`}
+					{carCodeExamples}
+					{codeExamples}
+					{freeText}
+					width={width / 2 - roadWidth / 2}
 				/>
 			</div>
 			<div slot="onroad">

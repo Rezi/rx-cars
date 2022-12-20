@@ -26,6 +26,25 @@
 		carStreamDefinition.at(-1).delay
 	} */
 
+	let codeExamples = [
+		`
+const clicks = fromEvent(document, 'click');
+const intervalEvents = interval(1000);
+const buffered = intervalEvents.pipe(buffer(clicks));
+buffered.subscribe(x => console.log(x));			
+										`
+	];
+
+	let carCodeExamples = [
+		`const carStream:Observble<Car> = stream;
+const intervalStream:<Observble:TrafficLightsValue>;
+const buffered = carStream.pipe(buffer(intervalStream));`
+	];
+
+	let freeText = `Buffers the source Observable values until closingNotifier emits.
+	
+In this example, values (cars) are buffered by intervals of the traffic lights stream. Compare intervals of boths stream in order to understand how the buffered batches are created`;
+
 	let subscriptions: Subscription;
 
 	let carStreamDefinition: IntervalItem[] = [
@@ -109,26 +128,29 @@
 		<Road x={width / 2} y={height / 2} width={roadWidth} height={height / 2}>
 			<div slot="decription-left">
 				<Description
-					title="Cars intervals:"
+					title="Buffer"
+					intervalsTitle="Cars intervals:"
+					{freeText}
 					streamItems={carStreamDefinition}
-					code={`
-const clicks = fromEvent(document, 'click');
-const intervalEvents = interval(1000);
-const buffered = intervalEvents.pipe(buffer(clicks));
-buffered.subscribe(x => console.log(x));			
-										`}
+					width={width / 2 - roadWidth / 2}
+					{codeExamples}
+					{carCodeExamples}
 				/>
 			</div>
 			<Cars slot="onroad" cars={carsStream} height={height / 2} animationDelay={animationDuration}>
 				<TrafficLights
 					{animationDuration}
 					{controlStream}
-					x={roadWidth + 50}
-					y={-50}
+					x={roadWidth + 30}
+					y={50}
 					width={width / 2}
 				>
 					<div style="width:{width / 2 - roadWidth / 2 - 100}px">
-						<Description title="Traffic lights intervals:" streamItems={lightsStreamDefinition} />
+						<Description
+							width={width / 2 - roadWidth / 2}
+							intervalsTitle="Traffic lights intervals:"
+							streamItems={lightsStreamDefinition}
+						/>
 					</div>
 				</TrafficLights>
 			</Cars>

@@ -17,6 +17,31 @@
 
 	// let autoresetTimer: ReturnType<typeof setTimeout>;
 
+	const codeExamples: string[] = [
+		`import { of, mergeMap, interval, map } from 'rxjs';
+ 
+ const letters = of('a', 'b', 'c');
+ const result = letters.pipe(
+   mergeMap(x => interval(1000).pipe(map(i => x + i)))
+ );
+  
+ result.subscribe(x => console.log(x));
+  
+ // Results in the following:
+ // a0
+ // b0
+ // c0
+ // a1
+ // b1
+ // c1
+ // continues to list a, b, c every second with respective ascending integers`
+	];
+	const carCodeExamples: string[] = [];
+
+	const freeText = `Projects each source value to an Observable which is merged in the output Observable.
+	
+In this example, values (streams of cars) are subscribed all together and their values (cars) are emited to an output stream.`;
+
 	const animationDuration = ANIMATION_DURATION;
 
 	const customeEasingFn = (a: number) => a;
@@ -137,14 +162,13 @@
 		<Road x={width / 2} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
 			<div slot="decription-left">
 				<Description
-					title="Cars intervals:"
+					title="MergeMap:"
+					intervalsTitle="Substream intervals:"
 					streamItems={mainRoadStreamDefinition}
-					code={`
-const clicks = fromEvent(document, 'click');
-const intervalEvents = interval(1000);
-const buffered = intervalEvents.pipe(buffer(clicks));
-buffered.subscribe(x => console.log(x));			
-										`}
+					{carCodeExamples}
+					{codeExamples}
+					{freeText}
+					width={width / 2 - roadWidth / 2}
 				/>
 			</div>
 			<div slot="onroad">

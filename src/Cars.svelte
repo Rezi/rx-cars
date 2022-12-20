@@ -5,6 +5,7 @@
 	import { fly } from 'svelte/transition';
 	import type { IntervalItems } from './models/interval.model';
 	import type { Observable } from 'rxjs';
+	import type { CarParts } from './models/parts.model';
 
 	export let animationDelay: number;
 	export let height: number;
@@ -13,6 +14,7 @@
 	export let queueCars = true;
 	export let moveStartPerStreamIndex = 0;
 	export let streamsRemovedCount: number = 0;
+	export let carParts: CarParts = 'all';
 </script>
 
 {#if $cars}
@@ -29,7 +31,7 @@
 				easing: easingFunction
 			}}
 		>
-			<Car {car} />
+			<Car {car} {carParts} />
 		</div>
 	{/each}
 {/if}

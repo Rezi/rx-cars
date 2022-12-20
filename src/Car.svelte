@@ -1,20 +1,25 @@
 <script lang="ts">
 	import type { IntervalItem } from './models/interval.model';
+	import type { CarParts } from './models/parts.model';
 
 	export let car: IntervalItem;
+	export let carParts: CarParts = 'all';
 
 	$: passengers = [...Array(car.value).keys()];
 </script>
 
 <div class="car" style="background-color:{car.color};">
-	<div class="wheel w-1" />
-	<div class="wheel w-2" />
-	<div class="wheel w-3" />
-	<div class="wheel w-4" />
-
-	{#each passengers as passenger}
-		<div class="passenger" />
-	{/each}
+	{#if ['wheels', 'all'].includes(carParts)}
+		<div class="wheel w-1" />
+		<div class="wheel w-2" />
+		<div class="wheel w-3" />
+		<div class="wheel w-4" />
+	{/if}
+	{#if ['value', 'all'].includes(carParts)}
+		{#each passengers as passenger}
+			<div class="passenger" />
+		{/each}
+	{/if}
 </div>
 
 <style type="text/scss">

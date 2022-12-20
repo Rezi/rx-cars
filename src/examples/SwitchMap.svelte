@@ -61,6 +61,23 @@
 
 	const animatedSubstreams: Array<Observable<any>> = [];
 
+	let codeExamples: string[] = [
+		`import { of, switchMap } from 'rxjs';
+ 
+const switched = of(1, 2, 3).pipe(switchMap(x => of(x, x ** 2, x ** 3)));
+switched.subscribe(x => console.log(x));`
+	];
+
+	let carCodeExamples: string[] = [
+		/* `const carStream:Observble<Car> = stream;
+const intervalStream:<Observble:TrafficLightsValue>;
+const buffered = carStream.pipe(buffer(intervalStream));` */
+	];
+
+	let freeText = `Projects each source value to an Observable which is merged in the output Observable, emitting values only from the most recently projected Observable.
+	
+In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output stream. Once the second substream emit a value, first substream is unsubscribed and cars are emited to the output stream only from the second stream. Same repeats once value comes in the third stream, second is unsbscribed...`;
+
 	let roadWidth = 100;
 	let subscriptions: Subscription;
 	let mainRoadStreamDefinition: IntervalItem[];
@@ -174,14 +191,13 @@
 		<Road x={width / 2} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
 			<div slot="decription-left">
 				<Description
-					title="Cars intervals:"
+					title="SwitchMap:"
 					streamItems={mainRoadStreamDefinition}
-					code={`
-const clicks = fromEvent(document, 'click');
-const intervalEvents = interval(1000);
-const buffered = intervalEvents.pipe(buffer(clicks));
-buffered.subscribe(x => console.log(x));			
-										`}
+					intervalsTitle="Substream intervals:"
+					{freeText}
+					width={width / 2 - roadWidth / 2}
+					{codeExamples}
+					{carCodeExamples}
 				/>
 			</div>
 			<div slot="onroad">
