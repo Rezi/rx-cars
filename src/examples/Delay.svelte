@@ -94,7 +94,7 @@ In this example, values emited in the stream are delayed by ${ANIMATION_DURATION
 </script>
 
 {#key $resetStore}
-	<Road x={width / 1.2} y={height * 0.5} width={roadWidth} height={height / 2} isOneLane={true}>
+	<Road x={width / 1.5} y={height * 0.5} width={roadWidth} height={height / 2} isOneLane={true}>
 		<Cars
 			slot="onroad"
 			animationDelay={ANIMATION_DURATION / 2}
@@ -105,10 +105,10 @@ In this example, values emited in the stream are delayed by ${ANIMATION_DURATION
 		/>
 	</Road>
 
-	<Road x={width / 1.2} y={-height / 2} width={roadWidth} {height} isOneLane={true}>
+	<Road x={width / 1.5} y={-height / 2} width={roadWidth} {height} isOneLane={true}>
 		<div slot="decription-left">
 			<Description
-				width={width / 1.2 - roadWidth / 2}
+				width={width / 1.5 - roadWidth / 2}
 				title="Delay"
 				{freeText}
 				{codeExamples}

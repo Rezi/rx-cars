@@ -224,7 +224,8 @@ In this example, values (streams of cars) are subscribed one by one. The first s
 		<Road x={width / 2} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
 			<div slot="decription-left">
 				<Description
-					intervalsTitle="Substream intervals:"
+					title="ConcatMap:"
+					intervalsTitle="Stream intervals:"
 					streamItems={mainRoadStreamDefinition}
 					{carCodeExamples}
 					{codeExamples}

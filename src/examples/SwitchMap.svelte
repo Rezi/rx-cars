@@ -193,7 +193,7 @@ In this example, values (streams of cars) are subscribed one by one. The first s
 				<Description
 					title="SwitchMap:"
 					streamItems={mainRoadStreamDefinition}
-					intervalsTitle="Substream intervals:"
+					intervalsTitle="Stream intervals:"
 					{freeText}
 					width={width / 2 - roadWidth / 2}
 					{codeExamples}

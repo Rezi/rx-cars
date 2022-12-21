@@ -23,6 +23,12 @@
 </div>
 
 <style type="text/scss">
+	:root {
+		--control-height: 8rem;
+		--side-block-padding: 2rem;
+
+		--operator-bg: #e5d2d8;
+	}
 	.window {
 		font-family: Candara, Calibri, Segoe, Segoe UI, Optima, Arial, sans-serif;
 		position: relative;
@@ -30,6 +36,7 @@
 		height: 100vh;
 		width: 100vw;
 		display: flex;
+		background: var(--operator-bg);
 	}
 
 	.pl-1 {
@@ -38,11 +45,13 @@
 
 	.control-wrap {
 		position: absolute;
-		bottom: 1.5rem;
-		left: 2rem;
+		bottom: 0;
+		left: 0;
 		z-index: 2;
 		display: flex;
 		align-items: center;
+		height: var(--control-height);
+		padding: var(--side-block-padding);
 
 		input[type='checkbox'] {
 			margin-bottom: 0;

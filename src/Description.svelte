@@ -13,7 +13,7 @@
 	export let streamItems: IntervalItem[] = [];
 </script>
 
-<div style="width:{width}px" class="description-block">
+<div style="width:calc({width}px - 4rem)" class="description-block">
 	<h1>{title}</h1>
 	<p class="free-text">{freeText}</p>
 	{#if streamItems?.length}
@@ -49,7 +49,23 @@
 	}
 
 	.description-block {
-		padding-right: 4rem;
+		--side-block-bg: #fff;
+
+		padding: var(--side-block-padding);
+		height: calc(100vh - var(--control-height));
+		overflow: auto;
+		background: var(--side-block-bg);
+
+		&::after {
+			display: block;
+			content: '';
+			width: 100%;
+			position: absolute;
+			height: calc(var(--control-height));
+			left: 0;
+			bottom: calc(-1 * var(--control-height));
+			background: var(--side-block-bg);
+		}
 	}
 
 	.free-text {
@@ -63,6 +79,7 @@
 	ul {
 		list-style: none;
 		display: flex;
+		flex-wrap: wrap;
 		li {
 			font-weight: bold;
 			padding-right: 1.5rem;

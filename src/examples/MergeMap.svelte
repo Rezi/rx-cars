@@ -163,7 +163,7 @@ In this example, values (streams of cars) are subscribed all together and their 
 			<div slot="decription-left">
 				<Description
 					title="MergeMap:"
-					intervalsTitle="Substream intervals:"
+					intervalsTitle="Stream intervals:"
 					streamItems={mainRoadStreamDefinition}
 					{carCodeExamples}
 					{codeExamples}

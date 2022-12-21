@@ -14,7 +14,11 @@
 	style="--road-width: {width}px;
 --road-height: {height}px;left:{x}px; top:{y}px; transform:translateX(-50%) rotate({rotation}deg)"
 >
-	<div class:operations={hasMark} />
+	{#if hasMark}
+		<div class="operations">
+			<div>Operator transformation happens here</div>
+		</div>
+	{/if}
 	<slot name="onroad" />
 </div>
 
@@ -25,23 +29,31 @@
 <style type="text/scss">
 	.description-left {
 		position: absolute;
-		left: 2rem;
-		top: 2rem;
+		left: 0rem;
+		top: 0rem;
 	}
 
 	.operations {
 		--padding: 2rem;
-		width: 3rem;
-		height: 3rem;
 		position: absolute;
 		left: calc(var(--road-width) + 3.5rem);
 		top: calc(-1 * var(--padding));
+		display: flex;
+		width: max-content;
 
-		border: solid black;
-		border-width: 0 1rem 1rem 0;
-		display: inline-block;
-		padding: 3px;
-		transform: rotate(135deg);
+		&:before {
+			display: block;
+
+			content: '';
+			width: 3rem;
+			height: 3rem;
+
+			border: solid black;
+			border-width: 0 1rem 1rem 0;
+			display: inline-block;
+			padding: 1rem;
+			transform: rotate(135deg);
+		}
 	}
 
 	.road {
