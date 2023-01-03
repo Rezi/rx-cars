@@ -92,18 +92,16 @@
 				<li><a class="disabled" href="/operators/audit">audit</a></li>
 				<li><a class="disabled" href="/operators/audit-time">auditTime</a></li>
 				<li><a class="disabled" href="/operators/debounce">debounce</a></li>
-				<li><a class="disabled" href="/operators/debounce-time">debounceTime</a></li>
-				<li><a class="disabled" href="/operators/distinct">distinct</a></li>
+				<li><a href="/operators/debounce-time">debounceTime</a></li>
+				<li><a href="/operators/distinct">distinct</a></li>
 				<li>
-					<a class="disabled" href="/operators/distinct-until-changed">distinctUntilChanged</a>
+					<a href="/operators/distinct-until-changed">distinctUntilChanged</a>
 				</li>
 				<li>
-					<a class="disabled" href="/operators/distinct-until-key-changed"
-						>distinctUntilKeyChanged</a
-					>
+					<a href="/operators/distinct-until-key-changed">distinctUntilKeyChanged</a>
 				</li>
 				<li><a class="disabled" href="/operators/element-at">elementAt</a></li>
-				<li><a class="disabled" href="/operators/filter">filter</a></li>
+				<li><a href="/operators/filter">filter</a></li>
 				<li><a class="disabled" href="/operators/first">first</a></li>
 				<li><a class="disabled" href="/operators/ignore-elements">ignoreElements</a></li>
 				<li><a class="disabled" href="/operators/last">last</a></li>

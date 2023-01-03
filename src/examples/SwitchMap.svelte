@@ -23,6 +23,7 @@
 	import type { IntervalItem, IntervalItems } from '../models/interval.model';
 
 	import Description from '../Description.svelte';
+	import { getResetStreamSubscription } from '../helpers/stream-control';
 	export let width = 0;
 	export let height = 0;
 	const animationDuration = ANIMATION_DURATION;
@@ -61,20 +62,36 @@
 
 	const animatedSubstreams: Array<Observable<any>> = [];
 
-	let codeExamples: string[] = [
+	const operatorTypeSignatures =
+		'switchMap<T, R, O extends ObservableInput<any>>(project: (value: T, index: number) => O, resultSelector?: (outerValue: T, innerValue: ObservedValueOf<O>, outerIndex: number, innerIndex: number) => R): OperatorFunction<T, ObservedValueOf<O> | R>';
+
+	const operatorParameters = [
+		[
+			'project',
+			'(value: T, index: number) => O',
+			`A function that, when applied to an item emitted by the source Observable, returns an Observable.`
+		],
+		[
+			'resultSelector',
+			'(outerValue: T, innerValue: ObservedValueOf<O>, outerIndex: number, innerIndex: number) => R',
+			`Optional. Default is undefined.`
+		]
+	];
+
+	const codeExamples: string[] = [
 		`import { of, switchMap } from 'rxjs';
  
 const switched = of(1, 2, 3).pipe(switchMap(x => of(x, x ** 2, x ** 3)));
 switched.subscribe(x => console.log(x));`
 	];
 
-	let carCodeExamples: string[] = [
+	const carCodeExamples: string[] = [
 		/* `const carStream:Observble<Car> = stream;
 const intervalStream:<Observble:TrafficLightsValue>;
 const buffered = carStream.pipe(buffer(intervalStream));` */
 	];
 
-	let freeText = `Projects each source value to an Observable which is merged in the output Observable, emitting values only from the most recently projected Observable.
+	const freeText = `Projects each source value to an Observable which is merged in the output Observable, emitting values only from the most recently projected Observable.
 	
 In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output stream. Once the second substream emit a value, first substream is unsubscribed and cars are emited to the output stream only from the second stream. Same repeats once value comes in the third stream, second is unsbscribed...`;
 
@@ -163,19 +180,13 @@ In this example, values (streams of cars) are subscribed one by one. The first s
 		);
 
 		// set the autoreset stream
-		const lastCarDelay = (carsStreamDefinition.at(-1)?.at(-1)?.delay || 0) + animationDuration * 2;
-
 		subscriptions.add(
-			getStreamWithIntervals([{ delay: lastCarDelay, key: 'reset' }])
-				.pipe(
-					first(),
-					finalize(() => {
-						if ($repeatStore) {
-							setStreams();
-						}
-					})
-				)
-				.subscribe()
+			getResetStreamSubscription(
+				(carsStreamDefinition.at(-1)?.at(-1)?.delay || 0) + animationDuration * 2,
+				repeatStore,
+				undefined,
+				setStreams
+			)
 		);
 	}
 
@@ -198,6 +209,8 @@ In this example, values (streams of cars) are subscribed one by one. The first s
 					width={width / 2 - roadWidth / 2}
 					{codeExamples}
 					{carCodeExamples}
+					{operatorTypeSignatures}
+					{operatorParameters}
 				/>
 			</div>
 			<div slot="onroad">

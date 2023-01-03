@@ -11,11 +11,29 @@
 	export let freeText: string = '';
 	export let width: number = 0;
 	export let streamItems: IntervalItem[] = [];
+	export let operatorTypeSignatures = '';
+	export let operatorParameters: string[][] | undefined = undefined;
 </script>
 
 <div style="width:calc({width}px - 4rem)" class="description-block">
 	<h1>{title}</h1>
 	<p class="free-text">{freeText}</p>
+
+	{#if operatorTypeSignatures}
+		<Highlight language={typescript} code={operatorTypeSignatures} />
+	{/if}
+	{#if operatorParameters}
+		<table class="arguments-table">
+			{#each operatorParameters as row}
+				<tr>
+					{#each row as cell}
+						<td>{cell}</td>
+					{/each}
+				</tr>
+			{/each}
+		</table>
+	{/if}
+
 	{#if streamItems?.length}
 		<h3>{intervalsTitle}</h3>
 		<ul>
@@ -46,6 +64,10 @@
 		position: relative;
 		z-index: 3;
 		line-height: 1.4;
+	}
+
+	.arguments-table {
+		font-size: 1.2rem;
 	}
 
 	.description-block {

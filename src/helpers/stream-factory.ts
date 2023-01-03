@@ -28,7 +28,7 @@ export function getStreamWithIntervals<T extends IntervalItem>(
 	intervals = addIndexes(intervals, streamIndex);
 
 	return new Observable((observer) => {
-		intervals.forEach((interval, index) => {
+		intervals.forEach((interval) => {
 			setTimeout(() => {
 				observer.next(interval);
 			}, interval.delay);

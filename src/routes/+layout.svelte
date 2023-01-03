@@ -6,6 +6,7 @@
 	:global {
 		:root {
 			--color-active: #af004f;
+			--color-action: #750035;
 			--color-base: #606c76;
 			--color-border: #d1d1d1;
 			--color-white: #fff;
@@ -87,18 +88,18 @@
 			white-space: nowrap;
 		}
 
-		.button:focus,
 		.button:hover,
-		button:focus,
 		button:hover,
+		.button:focus,
+		button:focus,
 		input[type='button']:focus,
 		input[type='button']:hover,
 		input[type='reset']:focus,
 		input[type='reset']:hover,
 		input[type='submit']:focus,
 		input[type='submit']:hover {
-			background-color: var(--color-base);
-			border-color: var(--color-base);
+			background-color: var(--color-action);
+			border-color: var(--color-action);
 			color: var(--color-white);
 			outline: 0;
 		}

@@ -2,7 +2,16 @@
 	import { onMount } from 'svelte';
 	import Road from '../Road.svelte';
 	import Cars from '../Cars.svelte';
-	import { type Observable, Subscription, share, delay, first, finalize } from 'rxjs';
+	import {
+		type Observable,
+		Subscription,
+		delay,
+		first,
+		finalize,
+		debounceTime,
+		share,
+		distinctUntilChanged
+	} from 'rxjs';
 
 	import { getStreamWithIntervals, turnToAnimatedStream } from '../helpers/stream-factory';
 	import { resetStore } from '../stores/reset-store';
@@ -20,50 +29,55 @@
 	const customEasingFn = (a: number) => a;
 
 	const carsStreamDefinition: IntervalItem[] = [
-		{ delay: 1000, value: 1, key: 'car' },
-		{ delay: 3000, value: 2, key: 'car' },
-		{ delay: 6000, value: 3, key: 'car' },
-		{ delay: 9000, value: 4, key: 'car' },
-		{ delay: 11500, value: 5, key: 'car' },
-		{ delay: 13500, value: 6, key: 'car' }
+		{ delay: 500, value: 1, key: 'car' },
+		{ delay: 1200, value: 3, key: 'car' },
+		{ delay: 1700, value: 3, key: 'car' },
+		{ delay: 4100, value: 5, key: 'car' },
+		{ delay: 4500, value: 1, key: 'car' },
+		{ delay: 7000, value: 1, key: 'car' },
+		{ delay: 7500, value: 1, key: 'car' },
+		{ delay: 8300, value: 2, key: 'car' }
 	];
 
-	const inputStreemAnimationDuration = ANIMATION_DURATION / 2;
-	const streamDelay = ANIMATION_DURATION / 2;
-
 	const operatorTypeSignatures =
-		'delay<T>(due: number | Date, scheduler: SchedulerLike = asyncScheduler): MonoTypeOperatorFunction<T>';
+		'distinctUntilChanged<T, K>(comparator?: (previous: K, current: K) => boolean, keySelector: (value: T) => K = identity as (value: T) => K): MonoTypeOperatorFunction<T>';
 
 	const operatorParameters = [
 		[
-			'due',
-			'number | Date	',
-			`The delay duration in milliseconds (a number) or a Date until which the emission of the source items is delayed.`
+			'comparator',
+			'(previous: K, current: K) => boolean',
+			`Optional. Default is undefined.
+A function used to compare the previous and current keys for equality. Defaults to a === check.`
 		],
 		[
-			'scheduler',
-			'SchedulerLike',
-			`Optional. Default is asyncScheduler.
-The SchedulerLike to use for managing the timers that handle the time-shift for each item.`
+			'keySelector',
+			'(value: T) => K',
+			`Optional. Default is identity as (value: T) => K.
+Used to select a key value to be passed to the comparator.`
 		]
 	];
 
 	const codeExamples: string[] = [
-		`import { fromEvent, delay } from 'rxjs';
+		`import { of, distinctUntilChanged } from 'rxjs';
 
-const clicks = fromEvent(document, 'click');
-const delayedClicks = clicks.pipe(delay(1000)); // each click emitted after 1 second
-delayedClicks.subscribe(x => console.log(x));`
+of(1, 1, 1, 2, 2, 2, 1, 1, 3, 3)
+  .pipe(distinctUntilChanged())
+  .subscribe(console.log);
+// Logs: 1, 2, 1, 3`
 	];
 
 	const carCodeExamples: string[] = [
 		`const carStream:Observble<Car> = stream;
-const delayedStream = carStream.pipe(delay(${streamDelay}));`
+const debounced = carStream.pipe(
+  distinctUntilChanged((prev:Car, curr:Car) => {
+    return prev.passengers === curr.passengers;
+  })
+);`
 	];
 
-	const freeText = `Delays the emission of items from the source Observable by a given timeout or until a given Date.
+	const freeText = `Returns a result Observable that emits all values pushed by the source observable if they are distinct in comparison to the last value the result observable emitted.
 	
-In this example, values emited in the stream are delayed by ${streamDelay} ms.`;
+In this example, values (cars) are filtered based car's passengers property. First car pass, the next car which will be passed to output stream needs to have different number of passengers then the previous car.`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -78,14 +92,16 @@ In this example, values emited in the stream are delayed by ${streamDelay} ms.`;
 		subscriptions = prepareForSubscriptions(subscriptions);
 
 		carsInputStream = getStreamWithIntervals(carsStreamDefinition).pipe(
-			turnToAnimatedStream({ removeAfterTime: inputStreemAnimationDuration + streamDelay }),
+			turnToAnimatedStream({ removeAfterTime: ANIMATION_DURATION / 2 }),
 			share()
 		);
 
 		carsOutputStream = getStreamWithIntervals(carsStreamDefinition).pipe(
-			delay(inputStreemAnimationDuration + streamDelay),
-			turnToAnimatedStream({ removeAfterTime: ANIMATION_DURATION }),
-			share()
+			delay(ANIMATION_DURATION / 2),
+			distinctUntilChanged((prev, curr) => {
+				return prev.value === curr.value;
+			}),
+			turnToAnimatedStream({ removeAfterTime: ANIMATION_DURATION })
 		);
 
 		// set the autoreset stream
@@ -93,7 +109,7 @@ In this example, values emited in the stream are delayed by ${streamDelay} ms.`;
 			getResetStreamSubscription(
 				carsStreamDefinition,
 				repeatStore,
-				ANIMATION_DURATION * 2,
+				ANIMATION_DURATION * 1.5,
 				setStreams
 			)
 		);
@@ -110,11 +126,12 @@ In this example, values emited in the stream are delayed by ${streamDelay} ms.`;
 	<Road x={width / 1.5} y={height * 0.5} width={roadWidth} height={height / 2} isOneLane={true}>
 		<Cars
 			slot="onroad"
-			animationDelay={inputStreemAnimationDuration}
+			animationDelay={ANIMATION_DURATION / 2}
 			cars={carsInputStream}
 			height={height / 2}
 			easingFunction={customEasingFn}
 			queueCars={false}
+			showLastCar={true}
 		/>
 	</Road>
 
@@ -122,10 +139,10 @@ In this example, values emited in the stream are delayed by ${streamDelay} ms.`;
 		<div slot="decription-left">
 			<Description
 				width={width / 1.5 - roadWidth / 2}
-				title="delay"
+				title="distinctUntilChanged"
 				{freeText}
-				{codeExamples}
 				{carCodeExamples}
+				{codeExamples}
 				{operatorTypeSignatures}
 				{operatorParameters}
 			/>

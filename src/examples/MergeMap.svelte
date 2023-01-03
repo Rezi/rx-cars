@@ -11,11 +11,32 @@
 	import type { IntervalItem, IntervalItems } from '../models/interval.model';
 	import { repeatStore } from '../stores/repeat-store';
 	import Description from '../Description.svelte';
+	import { getResetStreamSubscription } from '../helpers/stream-control';
 
 	export let width = 0;
 	export let height = 0;
 
-	// let autoresetTimer: ReturnType<typeof setTimeout>;
+	const operatorTypeSignatures =
+		'mergeMap<T, R, O extends ObservableInput<any>>(project: (value: T, index: number) => O, resultSelector?: number | ((outerValue: T, innerValue: ObservedValueOf<O>, outerIndex: number, innerIndex: number) => R), concurrent: number = Infinity): OperatorFunction<T, ObservedValueOf<O> | R>';
+
+	const operatorParameters = [
+		[
+			'project',
+			'(value: T, index: number) => O	',
+			`A function that, when applied to an item emitted by the source Observable, returns an Observable.`
+		],
+		[
+			'resultSelector',
+			'number | ((outerValue: T, innerValue: ObservedValueOf<O>, outerIndex: number, innerIndex: number) => R)',
+			`Optional. Default is undefined.`
+		],
+		[
+			'concurrent',
+			'number',
+			`Optional. Default is Infinity.
+Maximum number of input Observables being subscribed to concurrently.`
+		]
+	];
 
 	const codeExamples: string[] = [
 		`import { of, mergeMap, interval, map } from 'rxjs';
@@ -134,19 +155,13 @@ In this example, values (streams of cars) are subscribed all together and their 
 		);
 
 		// set the autoreset stream
-		const lastCarDelay = (carsStreamDefinition.at(-1)?.at(-1)?.delay || 0) + animationDuration * 2;
-
 		subscriptions.add(
-			getStreamWithIntervals([{ delay: lastCarDelay, key: 'reset' }])
-				.pipe(
-					first(),
-					finalize(() => {
-						if ($repeatStore) {
-							setStreams();
-						}
-					})
-				)
-				.subscribe()
+			getResetStreamSubscription(
+				(carsStreamDefinition.at(-1)?.at(-1)?.delay || 0) + animationDuration * 2,
+				repeatStore,
+				undefined,
+				setStreams
+			)
 		);
 	}
 
@@ -169,6 +184,8 @@ In this example, values (streams of cars) are subscribed all together and their 
 					{codeExamples}
 					{freeText}
 					width={width / 2 - roadWidth / 2}
+					{operatorTypeSignatures}
+					{operatorParameters}
 				/>
 			</div>
 			<div slot="onroad">

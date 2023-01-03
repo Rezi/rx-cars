@@ -10,7 +10,7 @@
 	import type { IntervalItem, IntervalItems } from '../models/interval.model';
 	import { repeatStore } from '../stores/repeat-store';
 	import Description from '../Description.svelte';
-	import { prepareForSubscriptions } from '../helpers/stream-control';
+	import { getResetStreamSubscription, prepareForSubscriptions } from '../helpers/stream-control';
 
 	export let width = 0;
 	export let height = 0;
@@ -28,7 +28,24 @@
 		{ delay: 13500, value: 6, key: 'car' }
 	];
 
-	let codeExamples: string[] = [
+	const operatorTypeSignatures =
+		'map<T, R>(project: (value: T, index: number) => R, thisArg?: any): OperatorFunction<T, R>';
+
+	const operatorParameters = [
+		[
+			'project',
+			'(value: T, index: number) => R	',
+			`The function to apply to each value emitted by the source Observable. The index parameter is the number i for the i-th emission that has happened since the subscription, starting from the number 0.`
+		],
+		[
+			'thisArg',
+			'any',
+			`Optional. Default is undefined.
+An optional argument to define what this is in the project function.`
+		]
+	];
+
+	const codeExamples: string[] = [
 		`import { fromEvent, map } from 'rxjs';
 
 const clicks = fromEvent<PointerEvent>(document, 'click');
@@ -37,13 +54,13 @@ const positions = clicks.pipe(map(ev => ev.clientX));
 positions.subscribe(x => console.log(x));`
 	];
 
-	let carCodeExamples: string[] = [
+	const carCodeExamples: string[] = [
 		/* `const carStream:Observble<Car> = stream;
 const intervalStream:<Observble:TrafficLightsValue>;
 const buffered = carStream.pipe(buffer(intervalStream));` */
 	];
 
-	let freeText = `Applies a given project function to each value emitted by the source Observable, and emits the resulting values as an Observable.
+	const freeText = `Applies a given project function to each value emitted by the source Observable, and emits the resulting values as an Observable.
 	
 In this example, values (cars) emited in the stream are transformed to differently coloured car bodies`;
 
@@ -74,19 +91,13 @@ In this example, values (cars) emited in the stream are transformed to different
 		);
 
 		// set the autoreset stream
-		const lastCarDelay = (carsStreamDefinition.at(-1)?.delay || 0) + ANIMATION_DURATION * 1.5;
-
 		subscriptions.add(
-			getStreamWithIntervals([{ delay: lastCarDelay, key: 'reset' }])
-				.pipe(
-					first(),
-					finalize(() => {
-						if ($repeatStore) {
-							setStreams();
-						}
-					})
-				)
-				.subscribe()
+			getResetStreamSubscription(
+				carsStreamDefinition,
+				repeatStore,
+				ANIMATION_DURATION * 1.5,
+				setStreams
+			)
 		);
 	}
 
@@ -117,6 +128,8 @@ In this example, values (cars) emited in the stream are transformed to different
 				{freeText}
 				{carCodeExamples}
 				{codeExamples}
+				{operatorTypeSignatures}
+				{operatorParameters}
 			/>
 		</div>
 

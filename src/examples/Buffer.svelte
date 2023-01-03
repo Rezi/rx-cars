@@ -16,15 +16,21 @@
 	import Description from '../Description.svelte';
 	export let width = 0;
 	export let height = 0;
-	let roadWidth = 360;
+	let roadWidth = 320;
 	let autoresetTimer: ReturnType<typeof setTimeout>;
 	const animationDuration = ANIMATION_DURATION;
-	/* 
-	$: repeat($repeatStore);
 
-	function repeat(isRepeating: boolean) {
-		carStreamDefinition.at(-1).delay
-	} */
+	const operatorTypeSignatures =
+		'buffer<T>(closingNotifier: ObservableInput<any>): OperatorFunction<T, T[]>';
+
+	const operatorParameters = [
+		[
+			'closingNotifier',
+			'ObservableInput<any>',
+			`An ObservableInput that signals the buffer to be emitted on the output Observable.
+`
+		]
+	];
 
 	let codeExamples = [
 		`
@@ -135,6 +141,8 @@ In this example, values (cars) are buffered by intervals of the traffic lights s
 					width={width / 2 - roadWidth / 2}
 					{codeExamples}
 					{carCodeExamples}
+					{operatorTypeSignatures}
+					{operatorParameters}
 				/>
 			</div>
 			<Cars slot="onroad" cars={carsStream} height={height / 2} animationDelay={animationDuration}>

@@ -27,7 +27,23 @@
 	export let width = 0;
 	export let height = 0;
 
-	let codeExamples: string[] = [
+	const operatorTypeSignatures =
+		'concatMap<T, R, O extends ObservableInput<any>>(project: (value: T, index: number) => O, resultSelector?: (outerValue: T, innerValue: ObservedValueOf<O>, outerIndex: number, innerIndex: number) => R): OperatorFunction<T, ObservedValueOf<O> | R>';
+
+	const operatorParameters = [
+		[
+			'project',
+			'(value: T, index: number) => O	',
+			`A function that, when applied to an item emitted by the source Observable, returns an Observable.`
+		],
+		[
+			'resultSelector',
+			'(outerValue: T, innerValue: ObservedValueOf<O>, outerIndex: number, innerIndex: number) => R',
+			'Optional. Default is undefined.'
+		]
+	];
+
+	const codeExamples: string[] = [
 		`content_copyopen_in_new
 import { fromEvent, concatMap, interval, take } from 'rxjs';
  
@@ -44,13 +60,13 @@ result.subscribe(x => console.log(x));
 // one click = 1000ms-> 0 -1000ms-> 1 -1000ms-> 2 -1000ms-> 3`
 	];
 
-	let carCodeExamples: string[] = [
+	const carCodeExamples: string[] = [
 		/* `const carStream:Observble<Car> = stream;
 const intervalStream:<Observble:TrafficLightsValue>;
 const buffered = carStream.pipe(buffer(intervalStream));` */
 	];
 
-	let freeText = `Projects each source value to an Observable which is merged in the output Observable, in a serialized fashion waiting for each one to complete before merging the next.
+	const freeText = `Projects each source value to an Observable which is merged in the output Observable, in a serialized fashion waiting for each one to complete before merging the next.
 	
 In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output stream. Once the first substream is closed, second substream is subscribed and cars from it are emited to the output stream and so on`;
 
@@ -231,6 +247,8 @@ In this example, values (streams of cars) are subscribed one by one. The first s
 					{codeExamples}
 					{freeText}
 					width={width / 2 - roadWidth / 2}
+					{operatorTypeSignatures}
+					{operatorParameters}
 				/>
 			</div>
 			<div slot="onroad">
