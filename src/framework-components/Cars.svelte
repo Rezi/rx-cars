@@ -3,9 +3,9 @@
 	import { cubicOut } from 'svelte/easing';
 
 	import { fly } from 'svelte/transition';
-	import type { IntervalItems, IntervalItem } from './models/interval.model';
+	import type { IntervalItems, IntervalItem } from '../models/interval.model';
 	import { type Observable, map, delay, filter, distinctUntilChanged } from 'rxjs';
-	import type { CarParts } from './models/parts.model';
+	import type { CarParts } from '../models/parts.model';
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Road from '../Road.svelte';
-	import Cars from '../Cars.svelte';
+	import Road from '../framework-components/Road.svelte';
+	import Cars from '../framework-components/Cars.svelte';
 	import { type Observable, Subscription, delay, share, distinct } from 'rxjs';
 
 	import { getStreamWithIntervals, turnToAnimatedStream } from '../helpers/stream-factory';
@@ -9,7 +9,7 @@
 	import { ANIMATION_DURATION } from '../consts/consts';
 	import type { IntervalItem, IntervalItems } from '../models/interval.model';
 	import { repeatStore } from '../stores/repeat-store';
-	import Description from '../Description.svelte';
+	import Description from '../framework-components/Description.svelte';
 	import { getResetStreamSubscription, prepareForSubscriptions } from '../helpers/stream-control';
 
 	export let width = 0;
@@ -78,9 +78,7 @@ of(
 	const carCodeExamples: string[] = [
 		`const carStream:Observble<Car> = stream;
 const debounced = carStream.pipe(
-  distinctUntilChanged((prev:Car, curr:Car) => {
-    return prev.passengers === curr.passengers;
-  })
+  distinct(({ passengers }) => passengers),
 );`
 	];
 

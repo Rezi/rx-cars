@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Road from '../Road.svelte';
-	import Roads from '../Roads.svelte';
-	import Cars from '../Cars.svelte';
+	import Road from '../framework-components/Road.svelte';
+	import Roads from '../framework-components/Roads.svelte';
+	import Cars from '../framework-components/Cars.svelte';
 	import { type Observable, Subscription, mergeMap, share, delay, first, finalize, of } from 'rxjs';
 	import { quadIn } from 'svelte/easing';
 	import { getStreamWithIntervals, turnToAnimatedStream } from '../helpers/stream-factory';
@@ -10,7 +10,7 @@
 	import { ANIMATION_DURATION } from '../consts/consts';
 	import type { IntervalItem, IntervalItems } from '../models/interval.model';
 	import { repeatStore } from '../stores/repeat-store';
-	import Description from '../Description.svelte';
+	import Description from '../framework-components/Description.svelte';
 	import { getResetStreamSubscription } from '../helpers/stream-control';
 
 	export let width = 0;

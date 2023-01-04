@@ -4,7 +4,7 @@
 
 	import { fly, fade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
-	import type { IntervalItem, IntervalItems } from './models/interval.model';
+	import type { IntervalItem, IntervalItems } from '../models/interval.model';
 	import type { Observable } from 'rxjs';
 
 	export let animationDuration: number;

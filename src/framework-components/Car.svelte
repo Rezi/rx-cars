@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { IntervalItem } from './models/interval.model';
-	import type { CarParts } from './models/parts.model';
+	import type { IntervalItem } from '../models/interval.model';
+	import type { CarParts } from '../models/parts.model';
 
 	export let car: IntervalItem;
 	export let carParts: CarParts = 'all';

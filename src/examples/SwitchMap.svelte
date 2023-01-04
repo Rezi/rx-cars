@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Road from '../Road.svelte';
-	import Roads from '../Roads.svelte';
-	import Cars from '../Cars.svelte';
+	import Road from '../framework-components/Road.svelte';
+	import Roads from '../framework-components/Roads.svelte';
+	import Cars from '../framework-components/Cars.svelte';
 	import {
 		type Observable,
 		Subscription,
@@ -22,7 +22,7 @@
 	import { ANIMATION_DURATION, REMOVE_STREAM_DELAY } from '../consts/consts';
 	import type { IntervalItem, IntervalItems } from '../models/interval.model';
 
-	import Description from '../Description.svelte';
+	import Description from '../framework-components/Description.svelte';
 	import { getResetStreamSubscription } from '../helpers/stream-control';
 	export let width = 0;
 	export let height = 0;

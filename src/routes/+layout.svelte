@@ -1,4 +1,10 @@
+<script lang="ts">
+	import Navigation from '../layout-components/Navigation.svelte';
+</script>
+
 <div class="global">
+	<Navigation />
+
 	<slot />
 </div>
 
@@ -52,6 +58,7 @@
 			font-weight: 300;
 			letter-spacing: 0.01em;
 			line-height: 1.6;
+			overflow-x: hidden;
 		}
 
 		blockquote {

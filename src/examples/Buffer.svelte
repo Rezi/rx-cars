@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Road from '../Road.svelte';
-	import Cars from '../Cars.svelte';
-	import TrafficLights from '../TrafficLights.svelte';
+	import Road from '../framework-components/Road.svelte';
+	import Cars from '../framework-components/Cars.svelte';
+	import TrafficLights from '../framework-components/TrafficLights.svelte';
 	import { share, buffer, mergeWith, delay, map, take, finalize, Subscription } from 'rxjs';
 	import type { Observable } from 'rxjs';
 	import { quadIn } from 'svelte/easing';
@@ -13,7 +13,7 @@
 	import { repeatStore } from '../stores/repeat-store';
 	import { prepareForSubscriptions } from '../helpers/stream-control';
 
-	import Description from '../Description.svelte';
+	import Description from '../framework-components/Description.svelte';
 	export let width = 0;
 	export let height = 0;
 	let roadWidth = 320;

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Highlight from 'svelte-highlight';
 	import typescript from 'svelte-highlight/languages/typescript';
-	import type { IntervalItem } from './models/interval.model';
-	import { ANIMATION_DURATION } from './consts/consts';
+	import type { IntervalItem } from '../models/interval.model';
+	import { ANIMATION_DURATION } from '../consts/consts';
 
 	export let carCodeExamples: string[] = [];
 	export let codeExamples: string[] = [];

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Green from './Green.svelte';
 	import { fly } from 'svelte/transition';
-	import type { IntervalItem } from './models/interval.model';
+	import type { IntervalItem } from '../models/interval.model';
 	import type { Observable } from 'rxjs';
 
 	export let x = 0;
