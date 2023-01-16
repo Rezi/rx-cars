@@ -28,31 +28,18 @@
 	export let height = 0;
 
 	const operatorTypeSignatures =
-		'concatMap<T, R, O extends ObservableInput<any>>(project: (value: T, index: number) => O, resultSelector?: (outerValue: T, innerValue: ObservedValueOf<O>, outerIndex: number, innerIndex: number) => R): OperatorFunction<T, ObservedValueOf<O> | R>';
-
-	const operatorParameters = [
-		[
-			'project',
-			'(value: T, index: number) => O	',
-			`A function that, when applied to an item emitted by the source Observable, returns an Observable.`
-		],
-		[
-			'resultSelector',
-			'(outerValue: T, innerValue: ObservedValueOf<O>, outerIndex: number, innerIndex: number) => R',
-			'Optional. Default is undefined.'
-		]
-	];
+		'concatAll<O extends ObservableInput<any>>(): OperatorFunction<O, ObservedValueOf<O>>';
 
 	const codeExamples: string[] = [
-		`content_copyopen_in_new
-import { fromEvent, concatMap, interval, take } from 'rxjs';
- 
+		`import { fromEvent, map, interval, take, concatAll } from 'rxjs';
+
 const clicks = fromEvent(document, 'click');
-const result = clicks.pipe(
-  concatMap(ev => interval(1000).pipe(take(4)))
+const higherOrder = clicks.pipe(
+  map(() => interval(1000).pipe(take(4)))
 );
-result.subscribe(x => console.log(x));
- 
+const firstOrder = higherOrder.pipe(concatAll());
+firstOrder.subscribe(x => console.log(x));
+
 // Results in the following:
 // (results are not concurrent)
 // For every click on the "document" it will emit values 0 to 3 spaced
@@ -66,7 +53,7 @@ const intervalStream:<Observble:TrafficLightsValue>;
 const buffered = carStream.pipe(buffer(intervalStream));` */
 	];
 
-	const freeText = `Projects each source value to an Observable which is merged in the output Observable, in a serialized fashion waiting for each one to complete before merging the next.`;
+	const freeText = `Converts a higher-order Observable into a first-order Observable by concatenating the inner Observables in order.`;
 	const exampleText = `In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output stream. Once the first substream is closed, second substream is subscribed and cars from it are emited to the output stream and so on`;
 
 	let streamsRemovedCount: number;
@@ -76,30 +63,29 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 
 	const customeEasingFn = (a: number) => a;
 
-	const transformValues = [2, 4, 1];
 	const carsStreamDefinition: IntervalItem[][] = [
 		[
-			{ delay: 1000, value: transformValues[0], key: 'car' },
-			{ delay: 3000, value: transformValues[0], key: 'car' },
-			{ delay: 4000, value: transformValues[0], key: 'car' },
-			{ delay: 6000, value: transformValues[0], key: 'car' },
-			{ delay: 7500, value: transformValues[0], key: 'car' },
-			{ delay: 8500, value: transformValues[0], key: 'car' }
+			{ delay: 1000, value: 1, key: 'car' },
+			{ delay: 3000, value: 2, key: 'car' },
+			{ delay: 4000, value: 2, key: 'car' },
+			{ delay: 6000, value: 2, key: 'car' },
+			{ delay: 7500, value: 2, key: 'car' },
+			{ delay: 8500, value: 2, key: 'car' }
 		],
 		[
-			{ delay: 1000, value: transformValues[1], key: 'car' },
-			{ delay: 2000, value: transformValues[1], key: 'car' },
-			{ delay: 3500, value: transformValues[1], key: 'car' },
-			{ delay: 5000, value: transformValues[1], key: 'car' },
-			{ delay: 7500, value: transformValues[1], key: 'car' }
+			{ delay: 1000, value: 1, key: 'car' },
+			{ delay: 2000, value: 2, key: 'car' },
+			{ delay: 3500, value: 2, key: 'car' },
+			{ delay: 5000, value: 2, key: 'car' },
+			{ delay: 7500, value: 2, key: 'car' }
 		],
 		[
-			{ delay: 1000, value: transformValues[2], key: 'car' },
-			{ delay: 3000, value: transformValues[2], key: 'car' },
-			{ delay: 5000, value: transformValues[2], key: 'car' },
-			{ delay: 7000, value: transformValues[2], key: 'car' },
-			{ delay: 8500, value: transformValues[2], key: 'car' },
-			{ delay: 9500, value: transformValues[2], key: 'car' }
+			{ delay: 1000, value: 1, key: 'car' },
+			{ delay: 3000, value: 2, key: 'car' },
+			{ delay: 5000, value: 2, key: 'car' },
+			{ delay: 7000, value: 2, key: 'car' },
+			{ delay: 8500, value: 2, key: 'car' },
+			{ delay: 9500, value: 2, key: 'car' }
 		]
 	];
 
@@ -156,8 +142,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 				delay: delayNumber,
 				animatedSubstream: animatedSubstreams[i],
 				pureSubstream: pureSubstreams[i],
-				key: 'road',
-				value: transformValues[i]
+				key: 'road'
 			};
 		});
 	}
@@ -242,10 +227,10 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 
 {#key $resetStore}
 	{#if mainRroadStream}
-		<Road x={width / 2 + roadWidth} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
+		<Road x={width / 2} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
 			<div slot="decription-left">
 				<Description
-					title="ConcatMap:"
+					title="ConcatAll:"
 					intervalsTitle="Stream intervals:"
 					streamItems={mainRoadStreamDefinition}
 					{carCodeExamples}
@@ -254,7 +239,6 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 					{exampleText}
 					width={width / 2 - roadWidth / 2}
 					{operatorTypeSignatures}
-					{operatorParameters}
 				/>
 			</div>
 			<div slot="onroad">
@@ -279,7 +263,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 			</div>
 		</Road>
 
-		<Road x={width / 2 + roadWidth} y={-height * 0.9} width={roadWidth} {height} isOneLane={true}>
+		<Road x={width / 2} y={-height * 0.9} width={roadWidth} {height}>
 			<Cars
 				slot="onroad"
 				animationDelay={animationDuration}

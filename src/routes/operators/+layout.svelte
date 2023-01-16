@@ -26,7 +26,6 @@
 	:root {
 		--control-height: 8rem;
 		--side-block-padding: 2rem;
-
 		--operator-bg: #e5d2d8;
 	}
 	.window {

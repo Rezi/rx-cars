@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import Road from '../framework-components/Road.svelte';
 	import Cars from '../framework-components/Cars.svelte';
 	import { type Observable, Subscription, delay, share, distinct } from 'rxjs';
@@ -82,9 +82,8 @@ const debounced = carStream.pipe(
 );`
 	];
 
-	const freeText = `Returns an Observable that emits all items emitted by the source Observable that are distinct by comparison from previous items.
-	
-In this example, values (cars) are filtered based car's passengers property. Only cars with number of passagers different from any other car which has passed thru the stream before are transfered to the output stream`;
+	const freeText = `Returns an Observable that emits all items emitted by the source Observable that are distinct by comparison from previous items.`;
+	const exampleText = `In this example, values (cars) are filtered based car's passengers property. Only cars with number of passagers different from any other car which has passed thru the stream before are transfered to the output stream`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -120,6 +119,10 @@ In this example, values (cars) are filtered based car's passengers property. Onl
 		);
 	}
 
+	onDestroy(() => {
+		subscriptions?.unsubscribe();
+	});
+
 	$: resetStreams($resetStore);
 
 	function resetStreams(resetNumber?: number) {
@@ -146,6 +149,7 @@ In this example, values (cars) are filtered based car's passengers property. Onl
 				width={width / 1.5 - roadWidth / 2}
 				title="distinct"
 				{freeText}
+				{exampleText}
 				{carCodeExamples}
 				{codeExamples}
 				{operatorTypeSignatures}

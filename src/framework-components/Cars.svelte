@@ -63,7 +63,7 @@
 </script>
 
 {#if $cars}
-	{#each $cars.items as car (car.id)}
+	{#each $cars.items as car, index (car.id)}
 		<div
 			class="car-wrap"
 			class:absolute={!queueCars}

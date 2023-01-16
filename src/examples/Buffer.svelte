@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import Road from '../framework-components/Road.svelte';
 	import Cars from '../framework-components/Cars.svelte';
 	import TrafficLights from '../framework-components/TrafficLights.svelte';
@@ -47,9 +47,8 @@ const intervalStream:<Observble:TrafficLightsValue>;
 const buffered = carStream.pipe(buffer(intervalStream));`
 	];
 
-	let freeText = `Buffers the source Observable values until closingNotifier emits.
-	
-In this example, values (cars) are buffered by intervals of the traffic lights stream. Compare intervals of boths stream in order to understand how the buffered batches are created`;
+	const freeText = `Buffers the source Observable values until closingNotifier emits.`;
+	const exampleText = `In this example, values (cars) are buffered by intervals of the traffic lights stream. Compare intervals of boths stream in order to understand how the buffered batches are created`;
 
 	let subscriptions: Subscription;
 
@@ -121,6 +120,10 @@ In this example, values (cars) are buffered by intervals of the traffic lights s
 		);
 	}
 
+	onDestroy(() => {
+		subscriptions?.unsubscribe();
+	});
+
 	$: resetStreams($resetStore);
 
 	function resetStreams(resetNumber?: number) {
@@ -137,6 +140,7 @@ In this example, values (cars) are buffered by intervals of the traffic lights s
 					title="Buffer"
 					intervalsTitle="Cars intervals:"
 					{freeText}
+					{exampleText}
 					streamItems={carStreamDefinition}
 					width={width / 2 - roadWidth / 2}
 					{codeExamples}

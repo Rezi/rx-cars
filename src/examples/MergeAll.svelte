@@ -3,8 +3,7 @@
 	import Road from '../framework-components/Road.svelte';
 	import Roads from '../framework-components/Roads.svelte';
 	import Cars from '../framework-components/Cars.svelte';
-	import { type Observable, Subscription, mergeMap, share, delay, first, finalize, of } from 'rxjs';
-	import { quadIn } from 'svelte/easing';
+	import { type Observable, Subscription, mergeMap, share, delay } from 'rxjs';
 	import { getStreamWithIntervals, turnToAnimatedStream } from '../helpers/stream-factory';
 	import { resetStore } from '../stores/reset-store';
 	import { ANIMATION_DURATION } from '../consts/consts';
@@ -17,81 +16,68 @@
 	export let height = 0;
 
 	const operatorTypeSignatures =
-		'mergeMap<T, R, O extends ObservableInput<any>>(project: (value: T, index: number) => O, resultSelector?: number | ((outerValue: T, innerValue: ObservedValueOf<O>, outerIndex: number, innerIndex: number) => R), concurrent: number = Infinity): OperatorFunction<T, ObservedValueOf<O> | R>';
+		'mergeAll<O extends ObservableInput<any>>(concurrent: number = Infinity): OperatorFunction<O, ObservedValueOf<O>>';
 
 	const operatorParameters = [
-		[
-			'project',
-			'(value: T, index: number) => O	',
-			`A function that, when applied to an item emitted by the source Observable, returns an Observable.`
-		],
-		[
-			'resultSelector',
-			'number | ((outerValue: T, innerValue: ObservedValueOf<O>, outerIndex: number, innerIndex: number) => R)',
-			`Optional. Default is undefined.`
-		],
 		[
 			'concurrent',
 			'number',
 			`Optional. Default is Infinity.
-Maximum number of input Observables being subscribed to concurrently.`
+Maximum number of inner Observables being subscribed to concurrently.`
 		]
 	];
 
 	const codeExamples: string[] = [
-		`import { of, mergeMap, interval, map } from 'rxjs';
- 
- const letters = of('a', 'b', 'c');
- const result = letters.pipe(
-   mergeMap(x => interval(1000).pipe(map(i => x + i)))
- );
-  
- result.subscribe(x => console.log(x));
-  
- // Results in the following:
- // a0
- // b0
- // c0
- // a1
- // b1
- // c1
- // continues to list a, b, c every second with respective ascending integers`
+		`import { fromEvent, map, interval, mergeAll } from 'rxjs';
+
+const clicks = fromEvent(document, 'click');
+const higherOrder = clicks.pipe(map(() => interval(1000)));
+const firstOrder = higherOrder.pipe(mergeAll());
+
+firstOrder.subscribe(x => console.log(x));`,
+		`import { fromEvent, map, interval, take, mergeAll } from 'rxjs';
+
+const clicks = fromEvent(document, 'click');
+const higherOrder = clicks.pipe(
+  map(() => interval(1000).pipe(take(10)))
+);
+const firstOrder = higherOrder.pipe(mergeAll(2));
+
+firstOrder.subscribe(x => console.log(x));`
 	];
 	const carCodeExamples: string[] = [];
 
-	const freeText = `Projects each source value to an Observable which is merged in the output Observable.`;
+	const freeText = `Converts a higher-order Observable into a first-order Observable which concurrently delivers all values that are emitted on the inner Observables.`;
 	const exampleText = `In this example, values (streams of cars) are subscribed all together and their values (cars) are emited to an output stream.`;
 
 	const animationDuration = ANIMATION_DURATION;
 
 	const customeEasingFn = (a: number) => a;
 
-	const transformValues = [2, 4, 1];
-
 	const carsStreamDefinition: IntervalItem[][] = [
 		[
-			{ delay: 1000, value: transformValues[0], key: 'car' },
-			{ delay: 3000, value: transformValues[0], key: 'car' },
-			{ delay: 6000, value: transformValues[0], key: 'car' },
-			{ delay: 9000, value: transformValues[0], key: 'car' },
-			{ delay: 11500, value: transformValues[0], key: 'car' },
-			{ delay: 13500, value: transformValues[0], key: 'car' }
+			{ delay: 1000, value: 1, key: 'car' },
+			{ delay: 3000, value: 2, key: 'car' },
+			{ delay: 6000, value: 2, key: 'car' },
+			{ delay: 9000, value: 2, key: 'car' },
+			{ delay: 11500, value: 2, key: 'car' },
+			{ delay: 13500, value: 2, key: 'car' }
 		],
 		[
-			{ delay: 5000, value: transformValues[1], key: 'car' },
-			{ delay: 7000, value: transformValues[1], key: 'car' },
-			{ delay: 8000, value: transformValues[1], key: 'car' },
-			{ delay: 10000, value: transformValues[1], key: 'car' },
-			{ delay: 12000, value: transformValues[1], key: 'car' },
-			{ delay: 17000, value: transformValues[1], key: 'car' }
+			{ delay: 5000, value: 1, key: 'car' },
+			{ delay: 7000, value: 2, key: 'car' },
+			{ delay: 8000, value: 2, key: 'car' },
+			{ delay: 10000, value: 2, key: 'car' },
+			{ delay: 12000, value: 2, key: 'car' },
+			{ delay: 17000, value: 2, key: 'car' }
 		],
 		[
-			{ delay: 10000, value: transformValues[2], key: 'car' },
-			{ delay: 11000, value: transformValues[2], key: 'car' },
-			{ delay: 12000, value: transformValues[2], key: 'car' },
-			{ delay: 13000, value: transformValues[2], key: 'car' },
-			{ delay: 15000, value: transformValues[2], key: 'car' },
-			{ delay: 19000, value: transformValues[2], key: 'car' }
+			{ delay: 10000, value: 1, key: 'car' },
+			{ delay: 11000, value: 2, key: 'car' },
+			{ delay: 12000, value: 2, key: 'car' },
+			{ delay: 13000, value: 2, key: 'car' },
+			{ delay: 15000, value: 2, key: 'car' },
+			{ delay: 19000, value: 2, key: 'car' }
 		]
 	];
 
@@ -123,8 +109,7 @@ Maximum number of input Observables being subscribed to concurrently.`
 				delay,
 				animatedSubstream: animatedSubstreams[i],
 				pureSubstream: pureSubstreams[i],
-				key: 'road',
-				value: transformValues[i]
+				key: 'road'
 			};
 		});
 	}
@@ -180,10 +165,10 @@ Maximum number of input Observables being subscribed to concurrently.`
 
 {#key $resetStore}
 	{#if mainRroadStream}
-		<Road x={width / 2 + roadWidth} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
+		<Road x={width / 2} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
 			<div slot="decription-left">
 				<Description
-					title="MergeMap:"
+					title="MergeAll:"
 					intervalsTitle="Stream intervals:"
 					streamItems={mainRoadStreamDefinition}
 					{carCodeExamples}
@@ -217,7 +202,7 @@ Maximum number of input Observables being subscribed to concurrently.`
 			</div>
 		</Road>
 
-		<Road x={width / 2 + roadWidth} y={-height * 0.9} width={roadWidth} {height} isOneLane={true}>
+		<Road x={width / 2} y={-height * 0.9} width={roadWidth} {height}>
 			<Cars
 				slot="onroad"
 				animationDelay={animationDuration}

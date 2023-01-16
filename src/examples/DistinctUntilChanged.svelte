@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import Road from '../framework-components/Road.svelte';
 	import Cars from '../framework-components/Cars.svelte';
 	import {
@@ -75,9 +75,8 @@ const debounced = carStream.pipe(
 );`
 	];
 
-	const freeText = `Returns a result Observable that emits all values pushed by the source observable if they are distinct in comparison to the last value the result observable emitted.
-	
-In this example, values (cars) are filtered based car's passengers property. First car pass, the next car which will be passed to output stream needs to have different number of passengers then the previous car.`;
+	const freeText = `Returns a result Observable that emits all values pushed by the source observable if they are distinct in comparison to the last value the result observable emitted.`;
+	const exampleText = `In this example, values (cars) are filtered based car's passengers property. First car pass, the next car which will be passed to output stream needs to have different number of passengers then the previous car.`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -115,6 +114,10 @@ In this example, values (cars) are filtered based car's passengers property. Fir
 		);
 	}
 
+	onDestroy(() => {
+		subscriptions?.unsubscribe();
+	});
+
 	$: resetStreams($resetStore);
 
 	function resetStreams(resetNumber?: number) {
@@ -141,6 +144,7 @@ In this example, values (cars) are filtered based car's passengers property. Fir
 				width={width / 1.5 - roadWidth / 2}
 				title="distinctUntilChanged"
 				{freeText}
+				{exampleText}
 				{carCodeExamples}
 				{codeExamples}
 				{operatorTypeSignatures}

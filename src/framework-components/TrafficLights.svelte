@@ -7,7 +7,8 @@
 	export let x = 0;
 	export let y = 0;
 	export let width = 0;
-	let GreenLightwidth = 300;
+	export let reversed = false;
+	export let greenLightwidth = 300;
 
 	export let controlStream: Observable<{ items: IntervalItem[] }>;
 	export let animationDuration: number;
@@ -15,7 +16,8 @@
 
 <div
 	class="trafic-lights-wrap"
-	style="left:{x}px; top:{y}px; --trafic-light-green-width:{GreenLightwidth}px"
+	style="left:{x}px; top:{y}px; --trafic-light-green-width:{greenLightwidth}px"
+	class:reversed
 >
 	<div class="lights-stream">
 		{#if $controlStream}
@@ -25,7 +27,7 @@
 					in:fly={{
 						delay: 0,
 						duration: animationDuration,
-						x: width + GreenLightwidth,
+						x: width + greenLightwidth,
 						y: 0,
 						opacity: 1,
 						easing: (t) => t
@@ -51,6 +53,8 @@
 		--trafic-light-color: #333;
 		--trafic-light-width: 2rem;
 		--trafic-light-head-height: 3.5rem;
+		--trafic-light-color-green: rgb(0, 203, 0);
+		--trafic-light-color-red: #f00;
 	}
 
 	.description {
@@ -60,6 +64,16 @@
 
 	.trafic-lights-wrap {
 		position: absolute;
+
+		&.reversed {
+			.lights-stream:after {
+				background-color: var(--trafic-light-color-green);
+			}
+
+			.green-light {
+				background-color: var(--trafic-light-color-red);
+			}
+		}
 	}
 
 	.lights-stream {
@@ -86,8 +100,8 @@
 		transform: translateX(calc(var(--trafic-light-green-width) * -1));
 		width: var(--trafic-light-green-width);
 		height: var(--trafic-light-head-height);
-		background-color: rgb(0, 203, 0);
-		border-top: calc(var(--trafic-light-head-height) / 2) solid #fff;
+		background-color: var(--trafic-light-color-green);
+		border-top: calc(var(--trafic-light-head-height) / 2) solid var(--operator-bg);
 	}
 
 	.trafic-lights {

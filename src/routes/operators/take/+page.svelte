@@ -1,10 +1,10 @@
 <script>
-	import ConcatMap from '../../../examples/ConcatMap.svelte';
+	import Take from '../../../examples/Take.svelte';
 	import Wrap from '../../../examples/Wrap.svelte';
 </script>
 
 <Wrap let:width let:height>
-	<ConcatMap {width} {height} />
+	<Take {width} {height} />
 </Wrap>
 
 <style>

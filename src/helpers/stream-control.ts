@@ -1,7 +1,7 @@
 import { Subscription, finalize, first } from 'rxjs';
-import type { Unsubscriber, Writable } from 'svelte/store';
 
 import type { IntervalItem } from '../models/interval.model';
+import type { Writable } from 'svelte/store';
 import { getStreamWithIntervals } from './stream-factory';
 
 export function prepareForSubscriptions(subscriptions: Subscription): Subscription {

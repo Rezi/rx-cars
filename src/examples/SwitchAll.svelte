@@ -12,8 +12,7 @@
 		mergeMap,
 		first,
 		map,
-		skip,
-		finalize
+		skip
 	} from 'rxjs';
 	import { getStreamWithIntervals, turnToAnimatedStream } from '../helpers/stream-factory';
 	import { resetStore } from '../stores/reset-store';
@@ -31,32 +30,30 @@
 
 	const customeEasingFn = (a: number) => a;
 
-	const transformValues = [2, 4, 1];
-
 	const carsStreamDefinition: IntervalItem[][] = [
 		[
-			{ delay: 1000, value: transformValues[0], key: 'car' },
-			{ delay: 3000, value: transformValues[0], key: 'car' },
-			{ delay: 6000, value: transformValues[0], key: 'car' },
-			{ delay: 9000, value: transformValues[0], key: 'car' },
-			{ delay: 11500, value: transformValues[0], key: 'car' },
-			{ delay: 13500, value: transformValues[0], key: 'car' }
+			{ delay: 1000, value: 1, key: 'car' },
+			{ delay: 3000, value: 2, key: 'car' },
+			{ delay: 6000, value: 2, key: 'car' },
+			{ delay: 9000, value: 2, key: 'car' },
+			{ delay: 11500, value: 2, key: 'car' },
+			{ delay: 13500, value: 2, key: 'car' }
 		],
 		[
-			{ delay: 5000, value: transformValues[1], key: 'car' },
-			{ delay: 7000, value: transformValues[1], key: 'car' },
-			{ delay: 8000, value: transformValues[1], key: 'car' },
-			{ delay: 10000, value: transformValues[1], key: 'car' },
-			{ delay: 12000, value: transformValues[1], key: 'car' },
-			{ delay: 17000, value: transformValues[1], key: 'car' }
+			{ delay: 5000, value: 1, key: 'car' },
+			{ delay: 7000, value: 2, key: 'car' },
+			{ delay: 8000, value: 2, key: 'car' },
+			{ delay: 10000, value: 2, key: 'car' },
+			{ delay: 12000, value: 2, key: 'car' },
+			{ delay: 17000, value: 2, key: 'car' }
 		],
 		[
-			{ delay: 10000, value: transformValues[2], key: 'car' },
-			{ delay: 11000, value: transformValues[2], key: 'car' },
-			{ delay: 12000, value: transformValues[2], key: 'car' },
-			{ delay: 13000, value: transformValues[2], key: 'car' },
-			{ delay: 15000, value: transformValues[2], key: 'car' },
-			{ delay: 19000, value: transformValues[2], key: 'car' }
+			{ delay: 10000, value: 1, key: 'car' },
+			{ delay: 11000, value: 2, key: 'car' },
+			{ delay: 12000, value: 2, key: 'car' },
+			{ delay: 13000, value: 2, key: 'car' },
+			{ delay: 15000, value: 2, key: 'car' },
+			{ delay: 19000, value: 2, key: 'car' }
 		]
 	];
 
@@ -65,36 +62,32 @@
 	const animatedSubstreams: Array<Observable<any>> = [];
 
 	const operatorTypeSignatures =
-		'switchMap<T, R, O extends ObservableInput<any>>(project: (value: T, index: number) => O, resultSelector?: (outerValue: T, innerValue: ObservedValueOf<O>, outerIndex: number, innerIndex: number) => R): OperatorFunction<T, ObservedValueOf<O> | R>';
-
-	const operatorParameters = [
-		[
-			'project',
-			'(value: T, index: number) => O',
-			`A function that, when applied to an item emitted by the source Observable, returns an Observable.`
-		],
-		[
-			'resultSelector',
-			'(outerValue: T, innerValue: ObservedValueOf<O>, outerIndex: number, innerIndex: number) => R',
-			`Optional. Default is undefined.`
-		]
-	];
+		'switchAll<O extends ObservableInput<any>>(): OperatorFunction<O, ObservedValueOf<O>>';
 
 	const codeExamples: string[] = [
-		`import { of, switchMap } from 'rxjs';
+		`import { fromEvent, tap, map, interval, switchAll } from 'rxjs';
 
-const switched = of(1, 2, 3).pipe(switchMap(x => of(x, x ** 2, x ** 3)));
-switched.subscribe(x => console.log(x));
-// outputs
-// 1
-// 1
+const clicks = fromEvent(document, 'click').pipe(tap(() => console.log('click')));
+const source = clicks.pipe(map(() => interval(1000)));
+
+source
+  .pipe(switchAll())
+  .subscribe(x => console.log(x));
+
+// Output
+// click
+// 0
 // 1
 // 2
-// 4
-// 8
 // 3
-// 9
-// 27`
+// ...
+// click
+// 0
+// 1
+// 2
+// ...
+// click
+// ...`
 	];
 
 	const carCodeExamples: string[] = [
@@ -103,7 +96,7 @@ const intervalStream:<Observble:TrafficLightsValue>;
 const buffered = carStream.pipe(buffer(intervalStream));` */
 	];
 
-	const freeText = `Projects each source value to an Observable which is merged in the output Observable, emitting values only from the most recently projected Observable.`;
+	const freeText = `Converts a higher-order Observable into a first-order Observable producing values only from the most recent observable sequence`;
 	const exampleText = `In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output stream. Once the second substream emit a value, first substream is unsubscribed and cars are emited to the output stream only from the second stream. Same repeats once value comes in the third stream, second is unsbscribed...`;
 
 	let roadWidth = 100;
@@ -133,8 +126,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 				delay,
 				animatedSubstream: animatedSubstreams[i],
 				pureSubstream: pureSubstreams[i],
-				key: 'road',
-				value: transformValues[i]
+				key: 'road'
 			};
 		});
 	}
@@ -215,10 +207,10 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 
 {#key $resetStore}
 	{#if mainRroadStream}
-		<Road x={width / 2 + roadWidth} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
+		<Road x={width / 2} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
 			<div slot="decription-left">
 				<Description
-					title="SwitchMap:"
+					title="SwitchAll:"
 					streamItems={mainRoadStreamDefinition}
 					intervalsTitle="Stream intervals:"
 					{freeText}
@@ -227,10 +219,9 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 					{codeExamples}
 					{carCodeExamples}
 					{operatorTypeSignatures}
-					{operatorParameters}
 				/>
 			</div>
-			<svelte:fragment slot="onroad">
+			<div slot="onroad">
 				<Roads
 					{roadWidth}
 					{height}
@@ -249,10 +240,10 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 						/>
 					{/if}
 				</Roads>
-			</svelte:fragment>
+			</div>
 		</Road>
 
-		<Road x={width / 2 + roadWidth} y={-height * 0.9} width={roadWidth} {height} isOneLane={true}>
+		<Road x={width / 2} y={-height * 0.9} width={roadWidth} {height}>
 			<Cars
 				slot="onroad"
 				animationDelay={animationDuration}

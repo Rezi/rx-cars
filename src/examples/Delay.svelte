@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import Road from '../framework-components/Road.svelte';
 	import Cars from '../framework-components/Cars.svelte';
 	import { type Observable, Subscription, share, delay, first, finalize } from 'rxjs';
@@ -61,9 +61,8 @@ delayedClicks.subscribe(x => console.log(x));`
 const delayedStream = carStream.pipe(delay(${streamDelay}));`
 	];
 
-	const freeText = `Delays the emission of items from the source Observable by a given timeout or until a given Date.
-	
-In this example, values emited in the stream are delayed by ${streamDelay} ms.`;
+	const freeText = `Delays the emission of items from the source Observable by a given timeout or until a given Date.`;
+	const exampleText = `In this example, values emited in the stream are delayed by ${streamDelay} ms.`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -99,6 +98,10 @@ In this example, values emited in the stream are delayed by ${streamDelay} ms.`;
 		);
 	}
 
+	onDestroy(() => {
+		subscriptions?.unsubscribe();
+	});
+
 	$: resetStreams($resetStore);
 
 	function resetStreams(resetNumber?: number) {
@@ -124,6 +127,7 @@ In this example, values emited in the stream are delayed by ${streamDelay} ms.`;
 				width={width / 1.5 - roadWidth / 2}
 				title="delay"
 				{freeText}
+				{exampleText}
 				{codeExamples}
 				{carCodeExamples}
 				{operatorTypeSignatures}

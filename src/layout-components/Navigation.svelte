@@ -25,6 +25,13 @@
 	<div class="content">
 		<div class="search">
 			<input bind:value={filterBy} type="search" placeholder="Search" />
+			<a
+				class="home-button"
+				href="/"
+				on:click={() => {
+					menuOpened = false;
+				}}>⌂ Home</a
+			>
 		</div>
 		<div class="list">
 			<TableOfContent on:close={onClosed} {filterBy} />
@@ -42,22 +49,7 @@
 		-webkit-transition: 0.5s ease-in-out;
 		transition: 0.5s ease-in-out;
 
-		z-index: 9;
-	}
-
-	.menu :global(a) {
-		color: var(--color-white);
-	}
-	.menu-button {
-		width: var(--button-size);
-		height: var(--button-size);
-		border-color: transparent;
-		padding: var(--button-padding);
-		box-sizing: content-box;
-		border-radius: 50%;
-		position: relative;
-		z-index: 1;
-		margin-bottom: 0;
+		z-index: 10;
 
 		&:after {
 			position: absolute;
@@ -72,13 +64,96 @@
 			z-index: -1;
 			transition: height 0.5s ease-in-out, width 0.5s ease-in-out;
 		}
+
+		:global(a) {
+			color: var(--color-white);
+		}
+
+		&.checked {
+			.hamburger {
+				transform: rotate(45deg);
+			}
+
+			.hamburger:after {
+				transform: rotate(90deg);
+				bottom: 0;
+			}
+			.hamburger:before {
+				transform: rotate(90deg);
+				top: 0;
+			}
+			.content {
+				opacity: 1;
+				pointer-events: initial;
+			}
+
+			&:after {
+				width: 400vh;
+				height: 400vh;
+			}
+		}
+
+		.content {
+			pointer-events: none;
+			padding-left: 3rem;
+			z-index: 2;
+			position: absolute;
+			top: calc(var(--button-size) + 2 * var(--button-padding));
+			right: 0;
+			opacity: 0;
+			transition: 0.25s 0.25s ease-in-out;
+			color: var(--color-white);
+			width: 100vw;
+
+			.search {
+				display: flex;
+				align-items: center;
+				position: absolute;
+				top: calc(-1 * var(--button-size));
+
+				.home-button {
+					white-space: nowrap;
+					padding-left: 3rem;
+					font-size: 2rem;
+				}
+
+				label {
+					font-size: 3rem;
+					padding-right: 2rem;
+					padding-bottom: 0;
+				}
+				input {
+					background-color: var(--color-white);
+					max-width: 30rem;
+					margin-bottom: 0;
+				}
+			}
+
+			.list {
+				margin-top: 5rem;
+				padding-right: 3rem;
+				display: grid;
+				grid-template-rows: masonry;
+				grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+				height: 100vh;
+				overflow-y: scroll;
+				gap: 1rem;
+				padding-bottom: calc(1 * var(--button-size) + 2 * var(--button-padding));
+			}
+		}
 	}
 
-	.menu.checked .menu-button {
-		&:after {
-			width: 400vh;
-			height: 400vh;
-		}
+	.menu-button {
+		background-color: var(--color-action);
+		width: var(--button-size);
+		height: var(--button-size);
+		border-color: transparent;
+		padding: var(--button-padding);
+		box-sizing: content-box;
+		border-radius: 50%;
+		position: relative;
+		z-index: 1;
+		margin-bottom: 0;
 	}
 
 	.hamburger {
@@ -91,90 +166,24 @@
 		transform-origin: center;
 		-webkit-transition: 0.5s ease-in-out;
 		transition: 0.5s ease-in-out;
-	}
 
-	.hamburger:after,
-	.hamburger:before {
-		-webkit-transition: 0.5s ease-in-out;
-		transition: 0.5s ease-in-out;
-		content: '';
-		position: absolute;
-		display: block;
-		width: 100%;
-		height: 100%;
-		background: var(--color-white);
-	}
-
-	.hamburger:before {
-		top: -1.2em;
-	}
-
-	.hamburger:after {
-		bottom: -1.2em;
-	}
-
-	.menu.checked .hamburger {
-		-webkit-transform: rotate(45deg);
-		transform: rotate(45deg);
-	}
-
-	.menu.checked .hamburger:after {
-		-webkit-transform: rotate(90deg);
-		transform: rotate(90deg);
-		bottom: 0;
-	}
-
-	.menu.checked .hamburger:before {
-		-webkit-transform: rotate(90deg);
-		transform: rotate(90deg);
-		top: 0;
-	}
-
-	.menu .content {
-		gap: 1rem;
-		pointer-events: none;
-		padding-left: 3rem;
-		z-index: 2;
-		position: absolute;
-		top: calc(var(--button-size) + 2 * var(--button-padding));
-		right: 0;
-		opacity: 0;
-		-webkit-transition: 0.25s 0s ease-in-out;
-		transition: 0.25s 0s ease-in-out;
-
-		color: var(--color-white);
-		width: 100vw;
-
-		.search {
-			display: flex;
-			align-items: center;
+		&:after,
+		&:before {
+			transition: 0.5s ease-in-out;
+			content: '';
 			position: absolute;
-			top: calc(-1 * var(--button-size));
-
-			label {
-				font-size: 3rem;
-				padding-right: 2rem;
-				padding-bottom: 0;
-			}
-			input {
-				background-color: var(--color-white);
-				max-width: 30rem;
-			}
+			display: block;
+			width: 100%;
+			height: 100%;
+			background: var(--color-white);
 		}
 
-		.list {
-			margin-top: 2rem;
-			padding-right: 3rem;
-			display: grid;
-			grid-template-rows: masonry;
-			grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-			height: 100vh;
-			overflow-y: scroll;
-			padding-bottom: calc(1 * var(--button-size) + 2 * var(--button-padding));
+		&:before {
+			top: -1em;
 		}
-	}
-	.menu.checked .content {
-		opacity: 1;
-		pointer-events: initial;
+
+		&:after {
+			bottom: -1em;
+		}
 	}
 </style>

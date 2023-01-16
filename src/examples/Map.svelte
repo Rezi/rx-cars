@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import Road from '../framework-components/Road.svelte';
 	import Cars from '../framework-components/Cars.svelte';
 	import { type Observable, Subscription, share, delay, first, finalize, map } from 'rxjs';
@@ -60,9 +60,8 @@ const intervalStream:<Observble:TrafficLightsValue>;
 const buffered = carStream.pipe(buffer(intervalStream));` */
 	];
 
-	const freeText = `Applies a given project function to each value emitted by the source Observable, and emits the resulting values as an Observable.
-	
-In this example, values (cars) emited in the stream are transformed to differently coloured car bodies`;
+	const freeText = `Applies a given project function to each value emitted by the source Observable, and emits the resulting values as an Observable.`;
+	const exampleText = `In this example, values (cars) emited in the stream are transformed to differently coloured car bodies`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -101,6 +100,10 @@ In this example, values (cars) emited in the stream are transformed to different
 		);
 	}
 
+	onDestroy(() => {
+		subscriptions?.unsubscribe();
+	});
+
 	$: resetStreams($resetStore);
 
 	function resetStreams(resetNumber?: number) {
@@ -126,6 +129,7 @@ In this example, values (cars) emited in the stream are transformed to different
 				width={width / 1.5 - roadWidth / 2}
 				title="Map"
 				{freeText}
+				{exampleText}
 				{carCodeExamples}
 				{codeExamples}
 				{operatorTypeSignatures}

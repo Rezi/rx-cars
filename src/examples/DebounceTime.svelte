@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import Road from '../framework-components/Road.svelte';
 	import Cars from '../framework-components/Cars.svelte';
 	import { type Observable, Subscription, delay, first, finalize, debounceTime, share } from 'rxjs';
@@ -62,9 +62,8 @@ const debounced = carStream.pipe(
 );`
 	];
 
-	const freeText = `Emits a notification from the source Observable only after a particular time span has passed without another source emission.
-	
-In this example, values (cars) waits for given time (1000ms). 
+	const freeText = `Emits a notification from the source Observable only after a particular time span has passed without another source emission.`;
+	const exampleText = `In this example, values (cars) waits for given time (1000ms). 
 Only if this time elapses and no other value is comming in the source stream within the timeframe, the value is emited to the output stream`;
 
 	let roadWidth = 100;
@@ -107,6 +106,10 @@ Only if this time elapses and no other value is comming in the source stream wit
 		);
 	}
 
+	onDestroy(() => {
+		subscriptions?.unsubscribe();
+	});
+
 	$: resetStreams($resetStore);
 
 	function resetStreams(resetNumber?: number) {
@@ -133,6 +136,7 @@ Only if this time elapses and no other value is comming in the source stream wit
 				width={width / 1.5 - roadWidth / 2}
 				title="debounceTime"
 				{freeText}
+				{exampleText}
 				{carCodeExamples}
 				{codeExamples}
 				{operatorTypeSignatures}

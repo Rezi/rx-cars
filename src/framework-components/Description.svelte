@@ -9,6 +9,7 @@
 	export let title: string = '';
 	export let intervalsTitle: string = '';
 	export let freeText: string = '';
+	export let exampleText: string = '';
 	export let width: number = 0;
 	export let streamItems: IntervalItem[] = [];
 	export let operatorTypeSignatures = '';
@@ -18,6 +19,7 @@
 <div style="width:calc({width}px - 4rem)" class="description-block">
 	<h1>{title}</h1>
 	<p class="free-text">{freeText}</p>
+	<p class="example-text">{exampleText}</p>
 
 	{#if operatorTypeSignatures}
 		<Highlight language={typescript} code={operatorTypeSignatures} />
@@ -92,6 +94,10 @@
 
 	.free-text {
 		white-space: pre-wrap;
+	}
+	.example-text {
+		white-space: pre-wrap;
+		font-weight: bold;
 	}
 
 	h3 {

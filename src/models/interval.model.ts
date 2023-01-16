@@ -9,6 +9,7 @@ export interface IntervalItem {
 	value?: number;
 	animatedSubstream?: Observable<IntervalItems>;
 	pureSubstream?: Observable<IntervalItem>;
+	transformValue?: number;
 }
 
 export interface IntervalItems {

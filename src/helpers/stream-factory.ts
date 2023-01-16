@@ -1,4 +1,4 @@
-import { Observable, delay, map, mergeWith, scan, type OperatorFunction } from 'rxjs';
+import { Observable, delay, map, mergeWith, of, scan, type OperatorFunction, share } from 'rxjs';
 
 import type { IntervalItem, IntervalItems } from '../models/interval.model';
 import { PASTEL_COLORS } from '../consts/consts';
@@ -40,11 +40,20 @@ export function turnToAnimatedStream(options?: {
 	removeAfterTime?: number;
 	removeOnKey?: string;
 	removeAfterStream?: Observable<IntervalItem>;
+	closeAfterTime?: number;
 }) {
 	return function (source: Observable<IntervalItem>) {
-		let addRemoveItemsPipe: OperatorFunction<IntervalItem, IntervalItem> | undefined;
+		const streamsToMergeWith: Observable<IntervalItem>[] = [];
+		if (options?.closeAfterTime) {
+			streamsToMergeWith.push(
+				of({ key: 'close', id: 'close', delay: options.closeAfterTime }).pipe(
+					delay(options.closeAfterTime),
+					share()
+				)
+			);
+		}
 		if (options?.removeAfterTime) {
-			addRemoveItemsPipe = mergeWith(
+			streamsToMergeWith.push(
 				source.pipe(
 					map((item: IntervalItem, i: number) => {
 						return { ...item, key: 'remove', id: 'remove' + i };
@@ -55,8 +64,12 @@ export function turnToAnimatedStream(options?: {
 		}
 
 		if (options?.removeAfterStream) {
-			addRemoveItemsPipe = mergeWith(options?.removeAfterStream);
+			streamsToMergeWith.push(options?.removeAfterStream);
 		}
+
+		const addRemoveItemsPipe: OperatorFunction<IntervalItem, IntervalItem> | undefined = mergeWith(
+			...streamsToMergeWith
+		);
 
 		const removeOnKey = options?.removeOnKey || 'remove';
 
