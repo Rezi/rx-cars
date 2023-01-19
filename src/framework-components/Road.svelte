@@ -11,6 +11,7 @@
 	export let closeStream: Observable<boolean> = new BehaviorSubject<false>(false).asObservable();
 	export let marginTop = '0';
 	export let zIndex = 0;
+	export let markRotation = 0;
 </script>
 
 <div
@@ -21,8 +22,8 @@
 --road-height: {height}px;left:{x}px; top:{y}px; transform:translateX(-50%) rotate({rotation}deg)"
 >
 	{#if hasMark}
-		<div class="operations">
-			<div>Operator transformation happens here</div>
+		<div class="operations" style="transform:rotate({markRotation}deg)">
+			Operator transformation happens here
 		</div>
 	{/if}
 	{#if !$closeStream}
@@ -48,6 +49,7 @@
 		top: calc(-1 * var(--padding));
 		display: flex;
 		width: max-content;
+		transform-origin: 0% 50%;
 
 		&:before {
 			display: block;

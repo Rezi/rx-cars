@@ -132,7 +132,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 		).list;
 	}
 
-	function setupMianRoadStreamDefinition() {
+	function setupMainRoadStreamDefinition() {
 		const pureSubstreams: Observable<IntervalItem>[] = [];
 
 		return ROADS_INTERVALS.map((delayNumber: number, i: number): IntervalItem => {
@@ -164,7 +164,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 
 	function setStreams() {
 		subscriptions = prepareForSubscriptions(subscriptions);
-		mainRoadStreamDefinition = setupMianRoadStreamDefinition();
+		mainRoadStreamDefinition = setupMainRoadStreamDefinition();
 
 		const pureMainRoadStream = getStreamWithIntervals(mainRoadStreamDefinition);
 
@@ -245,7 +245,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 		<Road x={width / 2 + roadWidth} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
 			<div slot="decription-left">
 				<Description
-					title="ConcatMap:"
+					title="concatMap:"
 					intervalsTitle="Stream intervals:"
 					streamItems={mainRoadStreamDefinition}
 					{carCodeExamples}

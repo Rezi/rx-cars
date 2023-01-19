@@ -4,11 +4,12 @@
 
 	export let car: IntervalItem;
 	export let carParts: CarParts = 'all';
+	export let carScale = 1.5;
 
 	$: passengers = [...Array(car.value).keys()];
 </script>
 
-<div class="car" style="background-color:{car.color};">
+<div class="car" style="background-color:{car.color};--car-scale: {carScale}">
 	{#if ['wheels', 'all'].includes(carParts)}
 		<div class="wheel w-1" />
 		<div class="wheel w-2" />
@@ -26,7 +27,6 @@
 	.car {
 		--car-outline-color: #666;
 		--car-color: #999;
-		--car-scale: 1.5;
 
 		width: calc(3rem * var(--car-scale));
 		height: calc(6rem * var(--car-scale));

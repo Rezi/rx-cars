@@ -177,7 +177,7 @@ const onlyLast = carStream.pipe(
 		<div slot="decription-left">
 			<Description
 				width={width / 1.5 - roadWidth / 2}
-				title="Last"
+				title="last"
 				{freeText}
 				{exampleText}
 				{carCodeExamples}

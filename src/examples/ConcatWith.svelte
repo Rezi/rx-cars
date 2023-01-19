@@ -219,7 +219,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 			<div slot="decription-left">
 				{#if closeStreams.length - 1 === index}
 					<Description
-						title="ConcatWith:"
+						title="concatWith:"
 						intervalsTitle="Stream intervals:"
 						{carCodeExamples}
 						{codeExamples}

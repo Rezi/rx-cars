@@ -137,7 +137,7 @@ const buffered = carStream.pipe(buffer(intervalStream));`
 		<Road x={width / 2} y={height / 2} width={roadWidth} height={height / 2}>
 			<div slot="decription-left">
 				<Description
-					title="Buffer"
+					title="buffer"
 					intervalsTitle="Cars intervals:"
 					{freeText}
 					{exampleText}

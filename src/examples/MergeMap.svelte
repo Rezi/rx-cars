@@ -109,7 +109,7 @@ Maximum number of input Observables being subscribed to concurrently.`
 		setStreams();
 	});
 
-	function setupMianRoadStreamDefinition() {
+	function setupMainRoadStreamDefinition() {
 		const pureSubstreams: Observable<IntervalItem>[] = [];
 		mainRoadStreamDefinition = ROADS_INTERVALS.map((delay: number, i: number): IntervalItem => {
 			pureSubstreams[i] = getStreamWithIntervals(carsStreamDefinition[i], i).pipe(share());
@@ -136,7 +136,7 @@ Maximum number of input Observables being subscribed to concurrently.`
 
 	function setStreams() {
 		prepareForSubscriptions();
-		setupMianRoadStreamDefinition();
+		setupMainRoadStreamDefinition();
 		// in order to ensure the subscription is shared among all subcomponents we need to subscribe here in the top level component
 		carsStreamDefinition.forEach((substreamDefinition, i) => {
 			subscriptions.add(animatedSubstreams[i].subscribe());
@@ -183,7 +183,7 @@ Maximum number of input Observables being subscribed to concurrently.`
 		<Road x={width / 2 + roadWidth} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
 			<div slot="decription-left">
 				<Description
-					title="MergeMap:"
+					title="mergeMap:"
 					intervalsTitle="Stream intervals:"
 					streamItems={mainRoadStreamDefinition}
 					{carCodeExamples}

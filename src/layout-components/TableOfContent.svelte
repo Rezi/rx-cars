@@ -27,13 +27,14 @@
 			groupName: 'Join Creation Operators',
 			span: 1,
 			items: [
-				{ disabled: true, href: 'combine-latest', name: 'combineLatest' },
+				{ disabled: false, href: 'combine-latest', name: 'combineLatest' },
+				{ disabled: true, href: 'combine-latest-with', name: 'combineLatestWith' },
 				{ disabled: false, href: 'concat-with', name: 'concatWith' },
 				{ disabled: true, href: 'fork-join', name: 'forkJoin' },
 				{ disabled: true, href: 'merge', name: 'merge ' },
 				{ disabled: true, href: 'partition', name: 'partition ' },
 				{ disabled: true, href: 'race', name: 'race ' },
-				{ disabled: true, href: 'zip', name: 'zip ' }
+				{ disabled: false, href: 'zip-with', name: 'zipWith ' }
 			]
 		},
 		{
@@ -46,7 +47,7 @@
 				{ disabled: false, href: 'merge-all', name: 'mergeAll ' },
 				{ disabled: false, href: 'switch-all', name: 'switchAll ' },
 				{ disabled: true, href: 'start-with', name: 'startWith ' },
-				{ disabled: true, href: 'with-latest-from', name: 'withLatestFrom ' }
+				{ disabled: false, href: 'with-latest-from', name: 'withLatestFrom ' }
 			]
 		},
 		{

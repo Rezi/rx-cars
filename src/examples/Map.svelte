@@ -127,7 +127,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 		<div slot="decription-left">
 			<Description
 				width={width / 1.5 - roadWidth / 2}
-				title="Map"
+				title="map"
 				{freeText}
 				{exampleText}
 				{carCodeExamples}

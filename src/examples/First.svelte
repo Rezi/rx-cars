@@ -140,7 +140,7 @@ const filtered = carStream.pipe(
 		<div slot="decription-left">
 			<Description
 				width={width / 1.5 - roadWidth / 2}
-				title="First"
+				title="first"
 				{freeText}
 				{exampleText}
 				{carCodeExamples}

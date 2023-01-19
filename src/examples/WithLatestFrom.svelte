@@ -168,7 +168,7 @@ firstOrder.subscribe(x => console.log(x));`
 		<Road x={width / 2} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
 			<div slot="decription-left">
 				<Description
-					title="mergeAll:"
+					title="withLatestFrom:"
 					intervalsTitle="Stream intervals:"
 					streamItems={mainRoadStreamDefinition}
 					{carCodeExamples}
