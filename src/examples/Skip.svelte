@@ -2,7 +2,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import Road from '../framework-components/Road.svelte';
 	import Cars from '../framework-components/Cars.svelte';
-	import { type Observable, Subscription, delay, skip, filter } from 'rxjs';
+	import { type Observable, Subscription, delay, skip, filter, share } from 'rxjs';
 
 	import { getStreamWithIntervals, turnToAnimatedStream } from '../helpers/stream-factory';
 	import { resetStore } from '../stores/reset-store';
@@ -78,13 +78,15 @@ const filtered = carStream.pipe(
 		subscriptions = prepareForSubscriptions(subscriptions);
 
 		carsInputStream = getStreamWithIntervals(carsStreamDefinition).pipe(
-			turnToAnimatedStream({ removeAfterTime: ANIMATION_DURATION / 2 })
+			turnToAnimatedStream({ removeAfterTime: ANIMATION_DURATION / 2 }),
+			share()
 		);
 
 		carsOutputStream = getStreamWithIntervals(carsStreamDefinition).pipe(
 			delay(ANIMATION_DURATION / 2),
 			skip(3),
-			turnToAnimatedStream({ removeAfterTime: ANIMATION_DURATION })
+			turnToAnimatedStream({ removeAfterTime: ANIMATION_DURATION }),
+			share()
 		);
 
 		// set the autoreset stream

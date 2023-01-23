@@ -86,7 +86,8 @@ Only if this time elapses and no other value is comming in the source stream wit
 		carsOutputStream = getStreamWithIntervals(carsStreamDefinition).pipe(
 			delay(ANIMATION_DURATION / 2),
 			debounceTime(1000),
-			turnToAnimatedStream({ removeAfterTime: ANIMATION_DURATION })
+			turnToAnimatedStream({ removeAfterTime: ANIMATION_DURATION }),
+			share()
 		);
 
 		// set the autoreset stream

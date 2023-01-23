@@ -39,11 +39,28 @@
 		]
 	];
 
-	const codeExamples: string[] = [];
-	const carCodeExamples: string[] = [];
+	const codeExamples: string[] = [
+		`import { fromEvent, zipWith, map } from "rxjs";
+
+const documentEvent = (eventName) =>
+  fromEvent(document, eventName).pipe(
+    map((e: MouseEvent) => ({ x: e.clientX, y: e.clientY }))
+  );
+
+documentEvent("mousedown")
+  .pipe(zipWith(documentEvent("mouseup")))
+  .subscribe((e) => console.log(JSON.stringify(e)));
+`
+	];
+
+	const carCodeExamples: string[] = [
+		`const carsOutputStream = carInputStreams[0].pipe(
+  zipWith(carInputStreams[1])
+);`
+	];
 
 	const freeText = `Subscribes to the source, and the observable inputs provided as arguments, and combines their values, by index, into arrays.`;
-	const exampleText = `In this example, values (streams of cars) are subscribed all together and their values (cars) are emited to an output stream.`;
+	const exampleText = `In this example, values (cars) in the main stream are combined with another stream. Once cars with same index (same color) in both streams reach the operator. They are together passed to the output stream`;
 
 	const animationDuration = ANIMATION_DURATION;
 
@@ -203,7 +220,7 @@
 				cars={carsOutputStream}
 				{height}
 				easingFunction={customeEasingFn}
-				queueCars={true}
+				queueCars={false}
 			/>
 		</Road>
 	{/if}

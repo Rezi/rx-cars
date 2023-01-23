@@ -30,24 +30,105 @@
 	let frame: number;
 	let elapsed = 0;
 	let startTime = 0;
+	let carItems: Observable<(IntervalItem | CarGroup)[]>;
+
+	interface CarGroup {
+		id?: string;
+		cars: IntervalItem[];
+		complexId?: string;
+		streamIndex?: number;
+		isGroup: true;
+	}
 
 	function update() {
 		frame = requestAnimationFrame(update);
 		elapsed = Date.now() - startTime;
 	}
 
-	onMount(() => {
-		update();
-	});
+	function setupCars() {
+		//if (queueCars) console.log('setup');
+		carItems = cars.pipe(
+			map((cars) => {
+				//if (queueCars) console.log(cars);
+				return cars.items;
+			}),
+			scan(
+				(acc, cur) => {
+					const toReturn = {
+						items: cur,
+						prevCarIds: cur
+							.filter((item) => !('isGroup' in item))
+							.map((item) => item.complexId || item.id),
+						groups: [...acc.groups]
+					};
 
-	onDestroy(() => {
-		if (browser) {
-			cancelAnimationFrame(frame);
-		}
-	});
+					const newItems = cur.filter(
+						(item) => !('isGroup' in item) && !acc.prevCarIds.includes(item.complexId || item.id)
+					);
 
-	$: {
+					if (newItems.length > 1) {
+						const group = newItems.map((item) => {
+							return item.complexId || item.id;
+						});
+
+						toReturn.groups.push(group);
+					}
+
+					return toReturn;
+				},
+				{ items: [], prevCarIds: [], groups: [] } as {
+					items: IntervalItem[];
+					prevCarIds: (string | undefined)[];
+					groups: (string | undefined)[][];
+				}
+			),
+			map((data): (IntervalItem | CarGroup)[] => {
+				const reducedItems = data.items.reduce(
+					(acc, cur) => {
+						const carId = (cur.complexId || cur.id) as string;
+						const parantGroup = data.groups.find((groupOfIds) => {
+							return groupOfIds.includes(carId);
+						});
+						if (parantGroup) {
+							const parantGroupString = parantGroup.join(':');
+							acc.groups[parantGroupString] = acc.groups[parantGroupString] || [];
+							acc.groups[parantGroupString].push(cur);
+						} else {
+							acc.singles.push(cur);
+						}
+
+						return acc;
+					},
+					{ singles: [], groups: {} } as {
+						singles: IntervalItem[];
+						groups: Record<string, IntervalItem[]>;
+					}
+				);
+
+				const groupedItems = [
+					...reducedItems.singles,
+					...Object.entries(reducedItems.groups).map((data: [string, IntervalItem[]]): CarGroup => {
+						const [complexId, items] = data;
+						return {
+							id: items[0].id,
+							cars: items,
+							complexId,
+							streamIndex: items[0].streamIndex,
+							isGroup: true
+						};
+					})
+				];
+
+				//if (queueCars) console.log(groupedItems);
+
+				return groupedItems;
+			})
+		);
+	}
+
+	function onCarsReady(cars: Observable<IntervalItems>) {
 		if (cars) {
+			!carItems && setupCars();
 			if (showLastCar) {
 				lastCarStream = cars.pipe(
 					filter((cars) => !!cars.items.length),
@@ -76,6 +157,18 @@
 		}
 	}
 
+	onMount(() => {
+		update();
+	});
+
+	onDestroy(() => {
+		if (browser) {
+			cancelAnimationFrame(frame);
+		}
+	});
+
+	$: onCarsReady(cars);
+
 	$: lastCarSet($lastCarStream);
 
 	function lastCarSet(car: IntervalItem | undefined) {
@@ -85,7 +178,7 @@
 	}
 </script>
 
-{#if $cars}
+{#if $cars && carItems && $carItems}
 	{#if showPassedCars && $passedCars}
 		<div class="passed-cars">
 			<div class="title">Cars reached / passed the operator</div>
@@ -96,7 +189,7 @@
 			{/each}
 		</div>
 	{/if}
-	{#each $cars.items as car, index (car.id)}
+	{#each $carItems as carItem, index (carItem.complexId || carItem.id)}
 		<div
 			class="car-wrap"
 			class:absolute={!queueCars}
@@ -104,12 +197,20 @@
 				delay: 0,
 				duration: animationDelay,
 				x: 0,
-				y: height + ((car.streamIndex || 0) - streamsRemovedCount) * moveStartPerStreamIndex,
+				y: height + ((carItem.streamIndex || 0) - streamsRemovedCount) * moveStartPerStreamIndex,
 				opacity: 1,
 				easing: easingFunction
 			}}
 		>
-			<Car {car} {carParts} />
+			{#if 'isGroup' in carItem}
+				<div class="cars-group">
+					{#each carItem.cars as car}
+						<Car {car} {carParts} />
+					{/each}
+				</div>
+			{:else}
+				<Car car={carItem} {carParts} />
+			{/if}
 		</div>
 	{/each}
 {/if}
@@ -157,12 +258,15 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		//border-radius: 1rem;
 	}
 
 	.car-wrap {
-		width: min-content;
 		display: inline-block;
+	}
+
+	.cars-group {
+		display: flex;
+		flex-wrap: wrap;
 	}
 
 	.absolute {

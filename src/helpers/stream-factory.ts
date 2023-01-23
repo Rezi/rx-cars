@@ -184,7 +184,7 @@ export function turnGroupsToAnimatedStream(options?: {
 					const higherDelay = Math.max(...delays);
 
 					acc.items.push(
-						...cur.map((item) => {
+						...cur.map((item: IntervalItem) => {
 							return { ...item, delay: higherDelay };
 						})
 					);

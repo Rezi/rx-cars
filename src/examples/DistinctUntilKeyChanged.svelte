@@ -100,7 +100,8 @@ const debounced = carStream.pipe(
 		carsOutputStream = getStreamWithIntervals(carsStreamDefinition).pipe(
 			delay(ANIMATION_DURATION / 2),
 			distinctUntilKeyChanged('value'),
-			turnToAnimatedStream({ removeAfterTime: ANIMATION_DURATION })
+			turnToAnimatedStream({ removeAfterTime: ANIMATION_DURATION }),
+			share()
 		);
 
 		// set the autoreset stream

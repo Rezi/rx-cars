@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import Road from '../framework-components/Road.svelte';
-	import Roads from '../framework-components/Roads.svelte';
 	import Cars from '../framework-components/Cars.svelte';
-	import { type Observable, Subscription, mergeMap, share, delay } from 'rxjs';
-	import { getStreamWithIntervals, turnToAnimatedStream } from '../helpers/stream-factory';
+	import { type Observable, Subscription, share, delay, map, combineLatest } from 'rxjs';
+	import {
+		getStreamWithIntervals,
+		turnToAnimatedStream,
+		turnGroupsToAnimatedStream
+	} from '../helpers/stream-factory';
 	import { resetStore } from '../stores/reset-store';
 	import { ANIMATION_DURATION } from '../consts/consts';
 	import type { IntervalItem, IntervalItems } from '../models/interval.model';
@@ -16,39 +19,32 @@
 	export let height = 0;
 
 	const operatorTypeSignatures =
-		'mergeAll<O extends ObservableInput<any>>(concurrent: number = Infinity): OperatorFunction<O, ObservedValueOf<O>>';
+		'combineLatest<O extends ObservableInput<any>, R>(...args: any[]): Observable<R> | Observable<ObservedValueOf<O>[]>';
 
-	const operatorParameters = [
-		[
-			'concurrent',
-			'number',
-			`Optional. Default is Infinity.
-Maximum number of inner Observables being subscribed to concurrently.`
-		]
-	];
+	const operatorParameters = [['args', 'any[]']];
 
 	const codeExamples: string[] = [
-		`import { fromEvent, map, interval, mergeAll } from 'rxjs';
+		`import { timer, combineLatest } from 'rxjs';
 
-const clicks = fromEvent(document, 'click');
-const higherOrder = clicks.pipe(map(() => interval(1000)));
-const firstOrder = higherOrder.pipe(mergeAll());
-
-firstOrder.subscribe(x => console.log(x));`,
-		`import { fromEvent, map, interval, take, mergeAll } from 'rxjs';
-
-const clicks = fromEvent(document, 'click');
-const higherOrder = clicks.pipe(
-  map(() => interval(1000).pipe(take(10)))
-);
-const firstOrder = higherOrder.pipe(mergeAll(2));
-
-firstOrder.subscribe(x => console.log(x));`
+const firstTimer = timer(0, 1000); // emit 0, 1, 2... after every second, starting from now
+const secondTimer = timer(500, 1000); // emit 0, 1, 2... after every second, starting 0,5s from now
+const combinedTimers = combineLatest([firstTimer, secondTimer]);
+combinedTimers.subscribe(value => console.log(value));
+// Logs
+// [0, 0] after 0.5s
+// [1, 0] after 1s
+// [1, 1] after 1.5s
+// [2, 1] after 2s`
 	];
-	const carCodeExamples: string[] = [];
 
-	const freeText = `Converts a higher-order Observable into a first-order Observable which concurrently delivers all values that are emitted on the inner Observables.`;
-	const exampleText = `In this example, values (streams of cars) are subscribed all together and their values (cars) are emited to an output stream.`;
+	const carCodeExamples: string[] = [
+		`const carsOutputStream = combineLatest(
+  carInputStreams[0], carInputStreams[1]
+);`
+	];
+
+	const freeText = `Combines multiple Observables to create an Observable whose values are calculated from the latest values of each of its input Observables.`;
+	const exampleText = `In this example, values (cars) in the main stream are combined with another stream. Once cars with same index (same color) in both streams reach the operator. They are together passed to the output stream`;
 
 	const animationDuration = ANIMATION_DURATION;
 
@@ -57,60 +53,38 @@ firstOrder.subscribe(x => console.log(x));`
 	const carsStreamDefinition: IntervalItem[][] = [
 		[
 			{ delay: 1000, value: 1, key: 'car' },
-			{ delay: 3000, value: 2, key: 'car' },
-			{ delay: 6000, value: 2, key: 'car' },
-			{ delay: 9000, value: 2, key: 'car' },
-			{ delay: 11500, value: 2, key: 'car' },
-			{ delay: 13500, value: 2, key: 'car' }
+			{ delay: 3000, value: 1, key: 'car' },
+			{ delay: 6000, value: 1, key: 'car' },
+			{ delay: 9000, value: 1, key: 'car' },
+			{ delay: 13500, value: 1, key: 'car' },
+			{ delay: 16500, value: 1, key: 'car' }
 		],
 		[
-			{ delay: 5000, value: 1, key: 'car' },
+			{ delay: 5000, value: 2, key: 'car' },
 			{ delay: 7000, value: 2, key: 'car' },
 			{ delay: 8000, value: 2, key: 'car' },
 			{ delay: 10000, value: 2, key: 'car' },
 			{ delay: 12000, value: 2, key: 'car' },
-			{ delay: 17000, value: 2, key: 'car' }
-		],
-		[
-			{ delay: 10000, value: 1, key: 'car' },
-			{ delay: 11000, value: 2, key: 'car' },
-			{ delay: 12000, value: 2, key: 'car' },
-			{ delay: 13000, value: 2, key: 'car' },
-			{ delay: 15000, value: 2, key: 'car' },
-			{ delay: 19000, value: 2, key: 'car' }
+			{ delay: 13000, value: 2, key: 'car' }
 		]
 	];
 
-	const ROADS_INTERVALS = [0, 4000, 9000];
+	const animatedStreams: Array<Observable<IntervalItems>> = [];
+	const pureInputStreams: Observable<IntervalItem>[] = [];
 
-	const animatedSubstreams: Array<Observable<any>> = [];
-
-	let roadWidth = 100;
+	let roadWidth = 210;
 	let subscriptions: Subscription;
-	let mainRoadStreamDefinition: IntervalItem[];
-	let mainRroadStream: Observable<IntervalItems>;
 	let carsOutputStream: Observable<IntervalItems>;
 
 	onMount(() => {
 		setStreams();
 	});
 
-	function setupMainRoadStreamDefinition() {
-		const pureSubstreams: Observable<IntervalItem>[] = [];
-		mainRoadStreamDefinition = ROADS_INTERVALS.map((delay: number, i: number): IntervalItem => {
-			pureSubstreams[i] = getStreamWithIntervals(carsStreamDefinition[i], i).pipe(share());
-			pureSubstreams[i].subscribe();
-			animatedSubstreams[i] = pureSubstreams[i].pipe(
-				turnToAnimatedStream({ removeAfterTime: animationDuration }),
-				share()
-			);
-
-			return {
-				delay,
-				animatedSubstream: animatedSubstreams[i],
-				pureSubstream: pureSubstreams[i],
-				key: 'road'
-			};
+	function setupInputRoadStreamDefinitions() {
+		carsStreamDefinition.forEach((group: IntervalItem[], i: number) => {
+			pureInputStreams[i] = getStreamWithIntervals(group, i).pipe(share());
+			subscriptions?.add(pureInputStreams[i].subscribe());
+			animatedStreams[i] = pureInputStreams[i].pipe(turnToAnimatedStream(), share());
 		});
 	}
 
@@ -121,30 +95,29 @@ firstOrder.subscribe(x => console.log(x));`
 
 	function setStreams() {
 		prepareForSubscriptions();
-		setupMainRoadStreamDefinition();
-		// in order to ensure the subscription is shared among all subcomponents we need to subscribe here in the top level component
-		carsStreamDefinition.forEach((substreamDefinition, i) => {
-			subscriptions.add(animatedSubstreams[i].subscribe());
-		});
 
-		const pureMainRoadStream = getStreamWithIntervals(mainRoadStreamDefinition);
+		setupInputRoadStreamDefinitions();
 
-		mainRroadStream = pureMainRoadStream.pipe(turnToAnimatedStream(), share());
+		let tickId = 0;
 
-		carsOutputStream = pureMainRoadStream.pipe(
-			mergeMap((road: IntervalItem) => {
-				return road.pureSubstream as Observable<IntervalItem>;
+		//function mapTickId();
+		carsOutputStream = combineLatest([pureInputStreams[0], pureInputStreams[1]]).pipe(
+			map((data) => {
+				tickId++;
+				return [
+					{ ...data[0], complexId: `${data[0].id}_${tickId}` },
+					{ ...data[1], complexId: `${data[1].id}_${tickId}` }
+				];
 			}),
 			delay(animationDuration),
-			turnToAnimatedStream({ removeAfterTime: animationDuration }),
-
+			turnGroupsToAnimatedStream({ removeAfterTime: animationDuration }),
 			share()
 		);
 
 		// set the autoreset stream
-		subscriptions.add(
+		subscriptions?.add(
 			getResetStreamSubscription(
-				(carsStreamDefinition.at(-1)?.at(-1)?.delay || 0) + animationDuration * 2,
+				(carsStreamDefinition.at(0)?.at(-1)?.delay || 0) + animationDuration * 2,
 				repeatStore,
 				undefined,
 				setStreams
@@ -161,48 +134,61 @@ firstOrder.subscribe(x => console.log(x));`
 	function resetStreams(resetNumber?: number) {
 		resetNumber && setStreams();
 	}
+
+	function ZipWith(
+		arg0: Observable<IntervalItem>
+	): import('rxjs').OperatorFunction<IntervalItem, IntervalItem> {
+		throw new Error('Function not implemented.');
+	}
 </script>
 
 {#key $resetStore}
-	{#if mainRroadStream}
-		<Road x={width / 2} y={height * 0.1} width={roadWidth} {height} isOneLane={true}>
+	{#if animatedStreams[0]}
+		<Road x={width / 2 + roadWidth / 4} y={height * 0.5} width={roadWidth / 2} {height}>
 			<div slot="decription-left">
 				<Description
 					title="combineLatest:"
 					intervalsTitle="Stream intervals:"
-					streamItems={mainRoadStreamDefinition}
 					{carCodeExamples}
 					{codeExamples}
 					{freeText}
 					{exampleText}
-					width={width / 2 - roadWidth / 2}
+					width={width / 2}
 					{operatorTypeSignatures}
 					{operatorParameters}
 				/>
 			</div>
-			<div slot="onroad">
-				<Roads
-					{roadWidth}
-					{height}
-					{animationDuration}
-					roadsStream={mainRroadStream}
-					let:cars
-					let:roadId
-				>
-					{#if cars && roadId}
-						<Cars
-							queueCars={false}
-							animationDelay={animationDuration}
-							{cars}
-							{height}
-							easingFunction={customeEasingFn}
-						/>
-					{/if}
-				</Roads>
-			</div>
+
+			<Cars
+				slot="onroad"
+				queueCars={false}
+				animationDelay={animationDuration}
+				cars={animatedStreams[0]}
+				{height}
+				easingFunction={customeEasingFn}
+				{carsOutputStream}
+			/>
 		</Road>
 
-		<Road x={width / 2} y={-height * 0.9} width={roadWidth} {height}>
+		<Road
+			x={width - roadWidth * 0.75}
+			y={height * 0.5}
+			width={roadWidth / 2}
+			{height}
+			hasMark={false}
+		>
+			<Cars
+				slot="onroad"
+				queueCars={false}
+				animationDelay={animationDuration}
+				cars={animatedStreams[1]}
+				{height}
+				easingFunction={customeEasingFn}
+				{carsOutputStream}
+			/>
+		</Road>
+
+		<Road x={(width / 4) * 3 - roadWidth / 4} y={-height * 0.5 - 30} width={roadWidth} {height}>
 			<Cars
 				slot="onroad"
 				animationDelay={animationDuration}
@@ -210,7 +196,6 @@ firstOrder.subscribe(x => console.log(x));`
 				{height}
 				easingFunction={customeEasingFn}
 				queueCars={false}
-				moveStartPerStreamIndex={roadWidth * 2.2}
 			/>
 		</Road>
 	{/if}

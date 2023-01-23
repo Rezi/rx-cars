@@ -4,6 +4,7 @@ export interface IntervalItem {
 	delay: number;
 	key: string;
 	id?: string;
+	complexId?: string;
 	streamIndex?: number;
 	color?: string;
 	value?: number;

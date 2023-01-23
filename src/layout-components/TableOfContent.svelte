@@ -47,7 +47,7 @@
 				{ disabled: false, href: 'merge-all', name: 'mergeAll ' },
 				{ disabled: false, href: 'switch-all', name: 'switchAll ' },
 				{ disabled: true, href: 'start-with', name: 'startWith ' },
-				{ disabled: false, href: 'with-latest-from', name: 'withLatestFrom ' }
+				{ disabled: true, href: 'with-latest-from', name: 'withLatestFrom ' }
 			]
 		},
 		{
