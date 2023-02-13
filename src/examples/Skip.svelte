@@ -95,7 +95,7 @@ const filtered = carStream.pipe(
 				carsStreamDefinition,
 				repeatStore,
 				ANIMATION_DURATION * 1.5,
-				setStreams
+				resetStore
 			)
 		);
 	}

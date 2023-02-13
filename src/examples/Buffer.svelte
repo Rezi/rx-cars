@@ -102,7 +102,7 @@ const buffered = carStream.pipe(buffer(intervalStream));`
 					finalize(() => {
 						if ($repeatStore) {
 							autoresetTimer = setTimeout(() => {
-								setStreams();
+								$resetStore++;
 							}, animationDuration);
 						}
 					})
@@ -118,6 +118,10 @@ const buffered = carStream.pipe(buffer(intervalStream));`
 			}),
 			share()
 		);
+
+		subscriptions.add(carsStream.subscribe());
+		subscriptions.add(controlStream.subscribe());
+		subscriptions.add(carsOutputStream.subscribe());
 	}
 
 	onDestroy(() => {

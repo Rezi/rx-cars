@@ -60,7 +60,7 @@ documentEvent("mousedown")
 	];
 
 	const freeText = `Subscribes to the source, and the observable inputs provided as arguments, and combines their values, by index, into arrays.`;
-	const exampleText = `In this example, values (cars) in the main stream are combined with another stream. Once cars with same index (same color) in both streams reach the operator. They are together passed to the output stream`;
+	const exampleText = `In this example, values (cars) in the main stream are combined with another stream. Once cars with same index (same color) in both streams reach the operator. They are together passed to the output Obervable`;
 
 	const animationDuration = ANIMATION_DURATION;
 
@@ -137,7 +137,7 @@ documentEvent("mousedown")
 				(carsStreamDefinition.at(0)?.at(-1)?.delay || 0) + animationDuration * 2,
 				repeatStore,
 				undefined,
-				setStreams
+				resetStore
 			)
 		);
 	}
@@ -150,12 +150,6 @@ documentEvent("mousedown")
 
 	function resetStreams(resetNumber?: number) {
 		resetNumber && setStreams();
-	}
-
-	function ZipWith(
-		arg0: Observable<IntervalItem>
-	): import('rxjs').OperatorFunction<IntervalItem, IntervalItem> {
-		throw new Error('Function not implemented.');
 	}
 </script>
 

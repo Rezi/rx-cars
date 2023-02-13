@@ -2,6 +2,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import Road from '../framework-components/Road.svelte';
 	import Cars from '../framework-components/Cars.svelte';
+	import LastCar from '../framework-components/LastCar.svelte';
 	import {
 		type Observable,
 		Subscription,
@@ -9,13 +10,16 @@
 		delay,
 		take,
 		of,
-		concatWith,
+		forkJoin,
 		mergeWith,
-		from,
 		mergeMap,
-		skip
+		map
 	} from 'rxjs';
-	import { getStreamWithIntervals, turnToAnimatedStream } from '../helpers/stream-factory';
+	import {
+		getStreamWithIntervals,
+		turnToAnimatedStream,
+		turnGroupsToAnimatedStream
+	} from '../helpers/stream-factory';
 	import { resetStore } from '../stores/reset-store';
 	import { repeatStore } from '../stores/repeat-store';
 	import { ANIMATION_DURATION, REMOVE_STREAM_DELAY } from '../consts/consts';
@@ -27,49 +31,44 @@
 	export let width = 0;
 	export let height = 0;
 
-	const operatorTypeSignatures =
-		'concatWith<T, A extends readonly unknown[]>(...otherSources: [...ObservableInputTuple<A>]): OperatorFunction<T, T | A[number]>';
+	const operatorTypeSignatures = 'forkJoin(...args: any[]): Observable<any>';
 
 	const operatorParameters = [
 		[
-			'otherSources',
-			'[...ObservableInputTuple<A>]',
-			'Other observable sources to subscribe to, in sequence, after the original source is complete.'
+			'args',
+			'any[]',
+			'Any number of Observables provided either as an array or as an arguments passed directly to the operator.'
 		]
 	];
 
 	const codeExamples: string[] = [
-		`import { fromEvent, map, take, concatWith } from 'rxjs';
+		`import { forkJoin, of, timer } from 'rxjs';
 
-const clicks$ = fromEvent(document, 'click');
-const moves$ = fromEvent(document, 'mousemove');
+const observable = forkJoin({
+  foo: of(1, 2, 3, 4),
+  bar: Promise.resolve(8),
+  baz: timer(4000)
+});
+observable.subscribe({
+ next: value => console.log(value),
+ complete: () => console.log('This is how it ends!'),
+});
 
-clicks$.pipe(
-  map(() => 'click'),
-  take(1),
-  concatWith(
-    moves$.pipe(
-      map(() => 'move')
-    )
-  )
-)
-.subscribe(x => console.log(x));
-
-// 'click'
-// 'move'
-// 'move'
-// 'move'
-// ...`
+// Logs:
+// { foo: 4, bar: 8, baz: 0 } after 4 seconds
+// 'This is how it ends!' immediately after`
 	];
 
 	const carCodeExamples: string[] = [
-		/* `const carStream:Observble<Car> = stream;
-const intervalStream:<Observble:TrafficLightsValue>;
-const buffered = carStream.pipe(buffer(intervalStream));` */
+		`const carsOutputStream = forkJoin([
+  carInputStreams[0].pipe(take(3)), 
+  carInputStreams[1].pipe(take(4)), 
+  carInputStreams[2].pipe(take(5))
+]);`
 	];
 
-	const freeText = `Emits all of the values from the source observable, then, once it completes, subscribes to each observable source provided, one at a time, emitting all of their values, and not subscribing to the next one until it completes.`;
-	const exampleText = `In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output Obervable. Once the first substream is closed, second substream is subscribed and cars from it are emited to the output Obervable and so on`;
+	const freeText = `Accepts an Array of ObservableInput or a dictionary Object of ObservableInput and returns an Observable that emits either an array of values in the exact same order as the passed array, or a dictionary of values in the same shape as the passed dictionary.`;
+	const exampleText = `In this example, once all input streams are closed, the output emits array with latest car from each closed input stream`;
 
 	let autoresetTimer: ReturnType<typeof setTimeout>;
 
@@ -81,27 +80,28 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 		[
 			{ delay: 1000, value: 1, key: 'car' },
 			{ delay: 3000, value: 2, key: 'car' },
-			{ delay: 4100, value: 2, key: 'car' },
-			{ delay: 6100, value: 2, key: 'car' },
-			{ delay: 7500, value: 2, key: 'car' },
-			{ delay: 8500, value: 2, key: 'car' }
+			{ delay: 4100, value: 2, key: 'car' }
 		],
 		[
-			{ delay: 1000, value: 1, key: 'car' },
+			{ delay: 500, value: 1, key: 'car' },
 			{ delay: 2100, value: 2, key: 'car' },
 			{ delay: 3500, value: 2, key: 'car' },
-			{ delay: 5200, value: 2, key: 'car' },
-			{ delay: 7500, value: 2, key: 'car' }
+			{ delay: 5200, value: 2, key: 'car' }
 		],
 		[
-			{ delay: 1000, value: 1, key: 'car' },
-			{ delay: 3000, value: 2, key: 'car' },
+			{ delay: 100, value: 1, key: 'car' },
+			{ delay: 2000, value: 2, key: 'car' },
 			{ delay: 5000, value: 2, key: 'car' },
 			{ delay: 7000, value: 2, key: 'car' },
-			{ delay: 8500, value: 2, key: 'car' },
-			{ delay: 9500, value: 2, key: 'car' }
+			{ delay: 8500, value: 2, key: 'car' }
 		]
 	];
+
+	const latestDelay = Math.max(
+		...carsStreamDefinitions.map((inputStreamDerfinition: IntervalItem[]) => {
+			return inputStreamDerfinition.at(-1)?.delay || 0;
+		})
+	);
 
 	const animatedStreams: Array<Observable<any>> = [];
 	const pureStreams: Observable<IntervalItem>[] = [];
@@ -115,7 +115,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 		setStreams();
 	});
 
-	function getSubstreamsDelays(): number[] {
+	/* function getSubstreamsDelays(): number[] {
 		const concatDelays = carsStreamDefinitions.map((set: IntervalItem[]) => {
 			return (set?.at(-1) as IntervalItem).delay || 0;
 		});
@@ -130,26 +130,26 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 		).list;
 
 		return allDelays;
-	}
+	} */
 
 	function setupStreamsDefinition() {
-		const accumulatedDelays = getSubstreamsDelays().slice(0, -1);
+		//const accumulatedDelays = getSubstreamsDelays().slice(0, -1);
 
-		return accumulatedDelays.forEach((delayNumber: number, i: number) => {
-			pureStreams[i] = getStreamWithIntervals(carsStreamDefinitions[i], i).pipe(
+		return carsStreamDefinitions.forEach((inputStreamDerfinition: IntervalItem[], i: number) => {
+			pureStreams[i] = getStreamWithIntervals(inputStreamDerfinition, i).pipe(
 				take(carsStreamDefinitions[i].length),
 				share()
 			);
 
-			animatedStreams[i] = getStreamWithIntervals(carsStreamDefinitions[i], i).pipe(
-				delay(accumulatedDelays[i]),
+			animatedStreams[i] = getStreamWithIntervals(inputStreamDerfinition, i).pipe(
 				take(carsStreamDefinitions[i].length),
 				turnToAnimatedStream({ removeAfterTime: animationDuration }),
 				share()
 			);
 
+			const latestDelayInStream = inputStreamDerfinition.at(-1)?.delay || 0;
 			closeStreams[i] = of(false).pipe(
-				mergeWith(of(true).pipe(delay(ANIMATION_DURATION + getSubstreamsDelays().slice(1)[i])))
+				mergeWith(of(true).pipe(delay(ANIMATION_DURATION + latestDelayInStream)))
 			);
 			// in order to ensure the subscription is shared among all subcomponents we need to subscribe here in the top level component
 			subscriptions.add(animatedStreams[i].subscribe());
@@ -160,18 +160,18 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 		subscriptions = prepareForSubscriptions(subscriptions);
 		setupStreamsDefinition();
 
-		const accumulatedDelays = getSubstreamsDelays();
-
-		carsOutputStream = pureStreams[0].pipe(
-			concatWith(pureStreams[1], pureStreams[2]),
+		carsOutputStream = forkJoin(pureStreams).pipe(
+			map((data) => data),
 			delay(animationDuration),
-			turnToAnimatedStream({ removeAfterTime: animationDuration }),
+			turnGroupsToAnimatedStream(),
 			share()
 		);
 
+		subscriptions.add(carsOutputStream.subscribe());
+
 		// set the autoreset stream
 		subscriptions.add(
-			of(<number>accumulatedDelays.at(-1))
+			of(latestDelay)
 				.pipe(
 					mergeMap((delayTime: number) => {
 						return of(null).pipe(delay(delayTime));
@@ -205,22 +205,20 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 {#key $resetStore}
 	{#each animatedStreams as stream, index}
 		<Road
-			x={width / 2}
-			y={height * 0.1}
+			x={width / 2 + (index * width) / 5.5}
+			y={height * 0.5}
 			width={roadWidth}
 			{height}
 			isOneLane={true}
-			rotation={index * -20}
 			hasMark={index === 0}
 			marginTop="0"
+			markRotation={-45}
 			closeStream={closeStreams[index]}
-			zIndex={closeStreams.length - index}
 		>
 			<div slot="decription-left">
-				{#if closeStreams.length - 1 === index}
+				{#if index === 0}
 					<Description
-						title="concatWith:"
-						intervalsTitle="Stream intervals:"
+						title="forkJoin:"
 						{carCodeExamples}
 						{codeExamples}
 						{freeText}
@@ -233,15 +231,17 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 			</div>
 			<Cars
 				slot="onroad"
-				queueCars={false}
 				animationDelay={animationDuration}
 				cars={animatedStreams[index]}
 				{height}
 				easingFunction={customeEasingFn}
+				queueCars={false}
 			/>
+
+			<LastCar slot="side-panel" animationDelay={animationDuration} cars={animatedStreams[index]} />
 		</Road>
 	{/each}
-	<Road x={width / 2} y={-height * 0.9} width={roadWidth} {height} zIndex={9} isOneLane={true}>
+	<Road x={width / 2} y={-height * 0.5} width={roadWidth} {height} isOneLane={true}>
 		<Cars
 			slot="onroad"
 			animationDelay={animationDuration}

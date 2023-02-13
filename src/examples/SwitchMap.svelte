@@ -98,13 +98,16 @@ switched.subscribe(x => console.log(x));
 	];
 
 	const carCodeExamples: string[] = [
-		/* `const carStream:Observble<Car> = stream;
-const intervalStream:<Observble:TrafficLightsValue>;
-const buffered = carStream.pipe(buffer(intervalStream));` */
+		`const carStream:Observble<number> = stream;
+carStream.pipe(switchMap((n: number) => {
+  return getStreamOfCarsWithNPassengers(n);
+}))`
 	];
 
 	const freeText = `Projects each source value to an Observable which is merged in the output Observable, emitting values only from the most recently projected Observable.`;
-	const exampleText = `In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output stream. Once the second substream emit a value, first substream is unsubscribed and cars are emited to the output stream only from the second stream. Same repeats once value comes in the third stream, second is unsbscribed...`;
+	const exampleText = `In this example, numbers are emited in the main stream. Once the number is processed by the operator function, it is turned to a substream of cars with passengers count equal to value from main stream. 
+	After that the substream is flatened and values (cars) eleveted from it to the output Obervable.
+	Once next number is processed from the main stream, it automatically closes the previous substream with cars (Only one substream can be active at same time)`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -197,7 +200,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 				(carsStreamDefinition.at(-1)?.at(-1)?.delay || 0) + animationDuration * 2,
 				repeatStore,
 				undefined,
-				setStreams
+				resetStore
 			)
 		);
 	}

@@ -93,7 +93,7 @@ const delayedStream = carStream.pipe(delay(${streamDelay}));`
 				carsStreamDefinition,
 				repeatStore,
 				ANIMATION_DURATION * 2,
-				setStreams
+				resetStore
 			)
 		);
 	}

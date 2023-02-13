@@ -54,7 +54,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 	];
 
 	const freeText = `Converts a higher-order Observable into a first-order Observable by concatenating the inner Observables in order.`;
-	const exampleText = `In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output stream. Once the first substream is closed, second substream is subscribed and cars from it are emited to the output stream and so on`;
+	const exampleText = `In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output Obervable. Once the first substream is closed, second substream is subscribed and cars from it are emited to the output Obervable and so on`;
 
 	let streamsRemovedCount: number;
 	let autoresetTimer: ReturnType<typeof setTimeout>;
@@ -203,7 +203,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 					finalize(() => {
 						if ($repeatStore) {
 							autoresetTimer = setTimeout(() => {
-								setStreams();
+								$resetStore++;
 							}, animationDuration * 2);
 						}
 					})

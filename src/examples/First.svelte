@@ -58,7 +58,7 @@ const filtered = carStream.pipe(
 	];
 
 	const freeText = `Emits only the first value (or the first value that meets some condition) emitted by the source Observable.`;
-	const exampleText = `In this example, only first value (car) is passed to the output stream. After that the output stream is closed`;
+	const exampleText = `In this example, only first value (car) is passed to the output Obervable. After that the output Obervable is closed`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -101,7 +101,7 @@ const filtered = carStream.pipe(
 				carsStreamDefinition,
 				repeatStore,
 				ANIMATION_DURATION * 1.5,
-				setStreams
+				resetStore
 			)
 		);
 	}

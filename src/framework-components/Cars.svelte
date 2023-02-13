@@ -9,7 +9,6 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { getPassedCarsIds } from '../helpers/stream-factory';
-	import { flip } from 'svelte/animate';
 
 	export let animationDelay: number;
 	export let height: number;
@@ -217,7 +216,7 @@
 
 {#if showLastCar && $lastCarStream}
 	<div class="last-car">
-		<Car car={$lastCarStream} />
+		<Car car={$lastCarStream} carScale={0.9} />
 		<span> Last item in input stream </span>
 		<strong>
 			{(elapsed / 1000).toFixed(1)}s

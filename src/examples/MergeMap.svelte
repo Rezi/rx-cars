@@ -57,10 +57,17 @@ Maximum number of input Observables being subscribed to concurrently.`
  // c1
  // continues to list a, b, c every second with respective ascending integers`
 	];
-	const carCodeExamples: string[] = [];
+	const carCodeExamples: string[] = [
+		`const carStream:Observble<number> = stream;
+carStream.pipe(mergeMap((n: number) => {
+  return getStreamOfCarsWithNPassengers(n);
+}))`
+	];
 
 	const freeText = `Projects each source value to an Observable which is merged in the output Observable.`;
-	const exampleText = `In this example, values (streams of cars) are subscribed all together and their values (cars) are emited to an output stream.`;
+	const exampleText = `In this example, numbers are emited in the main stream. Once the number is processed by the operator function, it is turned to a substream of cars with passengers count equal to value from main stream. 
+	After that the substream is flatened and values (cars) eleveted from it to the output Obervable.
+	Multipne numbers from the main stream can be transformed in the same way at the same time (Cars in output Obervable can be mixed from several substreams)`;
 
 	const animationDuration = ANIMATION_DURATION;
 
@@ -162,7 +169,7 @@ Maximum number of input Observables being subscribed to concurrently.`
 				(carsStreamDefinition.at(-1)?.at(-1)?.delay || 0) + animationDuration * 2,
 				repeatStore,
 				undefined,
-				setStreams
+				resetStore
 			)
 		);
 	}

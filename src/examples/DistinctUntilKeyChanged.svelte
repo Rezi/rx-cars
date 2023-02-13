@@ -2,6 +2,8 @@
 	import { onDestroy, onMount } from 'svelte';
 	import Road from '../framework-components/Road.svelte';
 	import Cars from '../framework-components/Cars.svelte';
+	import LastCar from '../framework-components/LastCar.svelte';
+
 	import {
 		type Observable,
 		Subscription,
@@ -78,7 +80,7 @@ const debounced = carStream.pipe(
 	];
 
 	const freeText = `Returns an Observable that emits all items emitted by the source Observable that are distinct by comparison from the previous item, using a property accessed by using the key provided to check if the two items are distinct.`;
-	const exampleText = `In this example, values (cars) are filtered based car's passengers property. First car pass, the next car which will be passed to output stream needs to have different number of passengers then the previous car.`;
+	const exampleText = `In this example, values (cars) are filtered based car's passengers property. First car pass, the next car which will be passed to output Obervable needs to have different number of passengers then the previous car.`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -110,7 +112,7 @@ const debounced = carStream.pipe(
 				carsStreamDefinition,
 				repeatStore,
 				ANIMATION_DURATION * 1.5,
-				setStreams
+				resetStore
 			)
 		);
 	}
@@ -135,8 +137,8 @@ const debounced = carStream.pipe(
 			height={height / 2}
 			easingFunction={customEasingFn}
 			queueCars={false}
-			showLastCar={true}
 		/>
+		<LastCar slot="side-panel" animationDelay={ANIMATION_DURATION / 2} cars={carsInputStream} />
 	</Road>
 
 	<Road x={width / 1.5} y={-height / 2} width={roadWidth} {height} isOneLane={true}>

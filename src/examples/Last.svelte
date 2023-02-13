@@ -2,6 +2,8 @@
 	import { onDestroy, onMount } from 'svelte';
 	import Road from '../framework-components/Road.svelte';
 	import Cars from '../framework-components/Cars.svelte';
+	import LastCar from '../framework-components/LastCar.svelte';
+
 	import {
 		type Observable,
 		Subscription,
@@ -89,7 +91,7 @@ const onlyLast = carStream.pipe(
 	];
 
 	const freeText = `Returns an Observable that emits only the last item emitted by the source Observable. It optionally takes a predicate function as a parameter, in which case, rather than emitting the last item from the source Observable, the resulting Observable will emit the last item from the source Observable that satisfies the predicate.`;
-	const exampleText = `In this example, only last value (car) is passed to the output stream, but only after the stream is closed, 1000 ms after the last car.`;
+	const exampleText = `In this example, only last value (car) is passed to the output Obervable, but only after the stream is closed, 1000 ms after the last car.`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -137,7 +139,7 @@ const onlyLast = carStream.pipe(
 				carsStreamDefinition,
 				repeatStore,
 				ANIMATION_DURATION * 1.5,
-				setStreams
+				resetStore
 			)
 		);
 	}
@@ -169,8 +171,8 @@ const onlyLast = carStream.pipe(
 			height={height / 2}
 			easingFunction={customEasingFn}
 			queueCars={false}
-			showLastCar={true}
 		/>
+		<LastCar slot="side-panel" animationDelay={ANIMATION_DURATION / 2} cars={carsInputStream} />
 	</Road>
 
 	<Road x={width / 1.5} y={-height / 2} width={roadWidth} {height} isOneLane={true}>

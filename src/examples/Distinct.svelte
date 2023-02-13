@@ -2,6 +2,8 @@
 	import { onDestroy, onMount } from 'svelte';
 	import Road from '../framework-components/Road.svelte';
 	import Cars from '../framework-components/Cars.svelte';
+	import LastCar from '../framework-components/LastCar.svelte';
+
 	import { type Observable, Subscription, delay, share, distinct } from 'rxjs';
 
 	import { getStreamWithIntervals, turnToAnimatedStream } from '../helpers/stream-factory';
@@ -83,7 +85,7 @@ const debounced = carStream.pipe(
 	];
 
 	const freeText = `Returns an Observable that emits all items emitted by the source Observable that are distinct by comparison from previous items.`;
-	const exampleText = `In this example, values (cars) are filtered based car's passengers property. Only cars with number of passagers different from any other car which has passed thru the stream before are transfered to the output stream`;
+	const exampleText = `In this example, values (cars) are filtered based car's passengers property. Only cars with number of passagers different from any other car which has passed thru the stream before are transfered to the output Obervable`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -115,7 +117,7 @@ const debounced = carStream.pipe(
 				carsStreamDefinition,
 				repeatStore,
 				ANIMATION_DURATION * 1.5,
-				setStreams
+				resetStore
 			)
 		);
 	}
@@ -140,7 +142,8 @@ const debounced = carStream.pipe(
 			height={height / 2}
 			easingFunction={customEasingFn}
 			queueCars={false}
-			showLastCar={true}
+			showPassedCars={true}
+			{carsOutputStream}
 		/>
 	</Road>
 

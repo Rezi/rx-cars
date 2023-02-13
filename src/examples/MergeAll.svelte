@@ -48,7 +48,7 @@ firstOrder.subscribe(x => console.log(x));`
 	const carCodeExamples: string[] = [];
 
 	const freeText = `Converts a higher-order Observable into a first-order Observable which concurrently delivers all values that are emitted on the inner Observables.`;
-	const exampleText = `In this example, values (streams of cars) are subscribed all together and their values (cars) are emited to an output stream.`;
+	const exampleText = `In this example, values (streams of cars) are subscribed all together and their values (cars) are emited to an output Obervable.`;
 
 	const animationDuration = ANIMATION_DURATION;
 
@@ -147,7 +147,7 @@ firstOrder.subscribe(x => console.log(x));`
 				(carsStreamDefinition.at(-1)?.at(-1)?.delay || 0) + animationDuration * 2,
 				repeatStore,
 				undefined,
-				setStreams
+				resetStore
 			)
 		);
 	}

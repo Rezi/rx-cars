@@ -97,7 +97,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 	];
 
 	const freeText = `Converts a higher-order Observable into a first-order Observable producing values only from the most recent observable sequence`;
-	const exampleText = `In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output stream. Once the second substream emit a value, first substream is unsubscribed and cars are emited to the output stream only from the second stream. Same repeats once value comes in the third stream, second is unsbscribed...`;
+	const exampleText = `In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output Obervable. Once the second substream emit a value, first substream is unsubscribed and cars are emited to the output Obervable only from the second stream. Same repeats once value comes in the third stream, second is unsbscribed...`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -189,7 +189,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 				(carsStreamDefinition.at(-1)?.at(-1)?.delay || 0) + animationDuration * 2,
 				repeatStore,
 				undefined,
-				setStreams
+				resetStore
 			)
 		);
 	}

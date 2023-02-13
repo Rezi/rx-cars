@@ -9,7 +9,6 @@ import {
 	share,
 	mergeMap,
 	from,
-	withLatestFrom,
 	combineLatest
 } from 'rxjs';
 
@@ -48,7 +47,7 @@ export function getStreamWithIntervals<T extends IntervalItem>(
 		});
 	});
 }
-
+/* 
 export function ungroupStreamOfItems() {
 	return function (source: Observable<IntervalItem | IntervalItem[]>): Observable<IntervalItem> {
 		return source.pipe(
@@ -61,6 +60,16 @@ export function ungroupStreamOfItems() {
 			})
 		);
 	};
+} */
+
+export function ungroupStreamOfItems() {
+	return mergeMap((item: IntervalItem | IntervalItem[]) => {
+		if (Array.isArray(item)) {
+			return from(item);
+		} else {
+			return of(item);
+		}
+	});
 }
 
 export function getPassedCarsIds(carsOutputStream: Observable<IntervalItems>) {

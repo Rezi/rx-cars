@@ -36,14 +36,14 @@
 		</table>
 	{/if}
 
-	{#if streamItems?.length}
+	<!-- 	{#if streamItems?.length}
 		<h3>{intervalsTitle}</h3>
 		<ul>
 			{#each streamItems as car}
 				<li>{(car.delay + ANIMATION_DURATION) / 1000}</li>
 			{/each}
 		</ul>
-	{/if}
+	{/if} -->
 
 	{#if carCodeExamples?.length}
 		<h3>Code example of animation</h3>

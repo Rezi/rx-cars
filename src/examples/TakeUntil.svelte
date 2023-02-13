@@ -79,7 +79,7 @@ const filtered = carStream.pipe(
 	];
 
 	const freeText = `Emits the values emitted by the source Observable until a notifier Observable emits a value.`;
-	const exampleText = `In this example, only values (cars) are passed to the output stream, before the trafficLightsStream emits its first value (6.5sec). After that the output stream is closed`;
+	const exampleText = `In this example, only values (cars) are passed to the output Obervable, before the trafficLightsStream emits its first value (6.5sec). After that the output Obervable is closed`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -125,7 +125,7 @@ const filtered = carStream.pipe(
 				carsStreamDefinition,
 				repeatStore,
 				ANIMATION_DURATION * 1.5,
-				setStreams
+				resetStore
 			)
 		);
 	}

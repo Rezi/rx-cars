@@ -1,7 +1,7 @@
 import { Subscription, finalize, first } from 'rxjs';
 
 import type { IntervalItem } from '../models/interval.model';
-import type { Writable } from 'svelte/store';
+import { type Writable, get } from 'svelte/store';
 import { getStreamWithIntervals } from './stream-factory';
 
 export function prepareForSubscriptions(subscriptions: Subscription): Subscription {
@@ -13,7 +13,7 @@ export function getResetStreamSubscription(
 	carsStreamDefinitionOrLastCarDelay: IntervalItem[] | number,
 	repeatStore: Writable<boolean>,
 	resetDelay: number | undefined,
-	resetFn: () => void
+	resetStore: Writable<number>
 ) {
 	let lastCarDelay: number;
 
@@ -28,7 +28,7 @@ export function getResetStreamSubscription(
 			first(),
 			finalize(() => {
 				const unsubscriber = repeatStore.subscribe((isRepeating) => {
-					isRepeating && resetFn();
+					isRepeating && resetStore.set(get(resetStore) + 1);
 				});
 
 				unsubscriber();

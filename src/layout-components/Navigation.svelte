@@ -10,7 +10,25 @@
 			filterBy = '';
 		}, 100);
 	}
+
+	let searchInput: HTMLInputElement;
+
+	$: onMenuOpened(menuOpened);
+
+	function onMenuOpened(menuOpened: boolean) {
+		menuOpened && searchInput.focus();
+	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.code === 'KeyM' && event.ctrlKey) {
+			event.stopImmediatePropagation();
+			event.preventDefault();
+			menuOpened = !menuOpened;
+		}
+	}
 </script>
+
+<svelte:window on:keydown={handleKeydown} />
 
 <nav class="menu" class:checked={menuOpened}>
 	<button
@@ -24,7 +42,7 @@
 
 	<div class="content">
 		<div class="search">
-			<input bind:value={filterBy} type="search" placeholder="Search" />
+			<input bind:value={filterBy} type="search" placeholder="Search" bind:this={searchInput} />
 			<a
 				class="home-button"
 				href="/"

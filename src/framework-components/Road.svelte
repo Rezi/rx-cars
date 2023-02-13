@@ -29,6 +29,8 @@
 	{#if !$closeStream}
 		<slot name="onroad" />
 	{/if}
+
+	<slot name="side-panel" />
 </div>
 
 <div class="description description-left">

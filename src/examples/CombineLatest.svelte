@@ -44,7 +44,7 @@ combinedTimers.subscribe(value => console.log(value));
 	];
 
 	const freeText = `Combines multiple Observables to create an Observable whose values are calculated from the latest values of each of its input Observables.`;
-	const exampleText = `In this example, values (cars) in the main stream are combined with another stream. Once cars with same index (same color) in both streams reach the operator. They are together passed to the output stream`;
+	const exampleText = `In this example, values (cars) from two stream are combined together. Once a value (car) in one stream reachs the operator, latest value(car) from the other stream is packed with it and passed to the output Obervable`;
 
 	const animationDuration = ANIMATION_DURATION;
 
@@ -120,7 +120,7 @@ combinedTimers.subscribe(value => console.log(value));
 				(carsStreamDefinition.at(0)?.at(-1)?.delay || 0) + animationDuration * 2,
 				repeatStore,
 				undefined,
-				setStreams
+				resetStore
 			)
 		);
 	}

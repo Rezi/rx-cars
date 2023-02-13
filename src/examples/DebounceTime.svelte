@@ -3,6 +3,7 @@
 	import Road from '../framework-components/Road.svelte';
 	import Cars from '../framework-components/Cars.svelte';
 	import { type Observable, Subscription, delay, first, finalize, debounceTime, share } from 'rxjs';
+	import LastCar from '../framework-components/LastCar.svelte';
 
 	import { getStreamWithIntervals, turnToAnimatedStream } from '../helpers/stream-factory';
 	import { resetStore } from '../stores/reset-store';
@@ -64,7 +65,7 @@ const debounced = carStream.pipe(
 
 	const freeText = `Emits a notification from the source Observable only after a particular time span has passed without another source emission.`;
 	const exampleText = `In this example, values (cars) waits for given time (1000ms). 
-Only if this time elapses and no other value is comming in the source stream within the timeframe, the value is emited to the output stream`;
+Only if this time elapses and no other value is comming in the source stream within the timeframe, the value is emited to the output Obervable`;
 
 	let roadWidth = 100;
 	let subscriptions: Subscription;
@@ -99,7 +100,7 @@ Only if this time elapses and no other value is comming in the source stream wit
 					first(),
 					finalize(() => {
 						if ($repeatStore) {
-							setStreams();
+							$resetStore++;
 						}
 					})
 				)
@@ -127,8 +128,8 @@ Only if this time elapses and no other value is comming in the source stream wit
 			height={height / 2}
 			easingFunction={customEasingFn}
 			queueCars={false}
-			showLastCar={true}
 		/>
+		<LastCar slot="side-panel" animationDelay={ANIMATION_DURATION / 2} cars={carsInputStream} />
 	</Road>
 
 	<Road x={width / 1.5} y={-height / 2} width={roadWidth} {height} isOneLane={true}>

@@ -95,7 +95,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 				carsStreamDefinition,
 				repeatStore,
 				ANIMATION_DURATION * 1.5,
-				setStreams
+				resetStore
 			)
 		);
 	}

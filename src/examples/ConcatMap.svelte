@@ -61,13 +61,16 @@ result.subscribe(x => console.log(x));
 	];
 
 	const carCodeExamples: string[] = [
-		/* `const carStream:Observble<Car> = stream;
-const intervalStream:<Observble:TrafficLightsValue>;
-const buffered = carStream.pipe(buffer(intervalStream));` */
+		`const carStream:Observble<number> = stream;
+carStream.pipe(concatMap((n: number) => {
+  return getStreamOfCarsWithNPassengers(n);
+}))`
 	];
 
 	const freeText = `Projects each source value to an Observable which is merged in the output Observable, in a serialized fashion waiting for each one to complete before merging the next.`;
-	const exampleText = `In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output stream. Once the first substream is closed, second substream is subscribed and cars from it are emited to the output stream and so on`;
+	const exampleText = `In this example, numbers are emited in the main stream. Once the number is processed by the operator function, it is turned to a substream of cars with passengers count equal to value from main stream. 
+	After that the substream is flatened and values (cars) eleveted from it to the output Obervable.
+	Once the substream is closed next number from the main stream is processed in the same way.`;
 
 	let streamsRemovedCount: number;
 	let autoresetTimer: ReturnType<typeof setTimeout>;
@@ -218,7 +221,7 @@ const buffered = carStream.pipe(buffer(intervalStream));` */
 					finalize(() => {
 						if ($repeatStore) {
 							autoresetTimer = setTimeout(() => {
-								setStreams();
+								$resetStore++;
 							}, animationDuration * 2);
 						}
 					})
