@@ -266,6 +266,9 @@
 	.cars-group {
 		display: flex;
 		flex-wrap: wrap;
+		background-color: var(--color-bg-opacity);
+		box-shadow: 0px -0.5rem 0px 1rem var(--road-bg), 0px -0.5rem 0px 1.1rem var(--color-active);
+		border-radius: 1rem;
 	}
 
 	.absolute {
