@@ -61,8 +61,8 @@ result.subscribe(x => console.log(x));
 	];
 
 	const carCodeExamples: string[] = [
-		`const carStream:Observble<number> = stream;
-carStream.pipe(concatMap((n: number) => {
+		`const cars:Observble<number> = carsSource;
+cars.pipe(concatMap((n: number) => {
   return getStreamOfCarsWithNPassengers(n);
 }))`
 	];

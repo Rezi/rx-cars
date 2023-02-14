@@ -78,8 +78,8 @@ of(
 	];
 
 	const carCodeExamples: string[] = [
-		`const carStream:Observble<Car> = stream;
-const debounced = carStream.pipe(
+		`const cars:Observable<Car> = carsSource;
+const debounced = cars.pipe(
   distinct(({ passengers }) => passengers),
 );`
 	];

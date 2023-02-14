@@ -62,11 +62,7 @@ clicks$.pipe(
 // ...`
 	];
 
-	const carCodeExamples: string[] = [
-		/* `const carStream:Observble<Car> = stream;
-const intervalStream:<Observble:TrafficLightsValue>;
-const buffered = carStream.pipe(buffer(intervalStream));` */
-	];
+	const carCodeExamples: string[] = [];
 
 	const freeText = `Emits all of the values from the source observable, then, once it completes, subscribes to each observable source provided, one at a time, emitting all of their values, and not subscribing to the next one until it completes.`;
 	const exampleText = `In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output Obervable. Once the first substream is closed, second substream is subscribed and cars from it are emited to the output Obervable and so on`;

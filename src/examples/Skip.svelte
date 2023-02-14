@@ -56,8 +56,8 @@ result.subscribe(value => console.log(value));
 	];
 
 	const carCodeExamples: string[] = [
-		`const carStream:Observble<Car> = stream;
-const filtered = carStream.pipe(
+		`const cars:Observable<Car> = carsSource;
+const filtered = cars.pipe(
   skip(3)
 );`
 	];

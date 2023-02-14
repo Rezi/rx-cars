@@ -47,11 +47,7 @@ firstOrder.subscribe(x => console.log(x));
 // one click = 1000ms-> 0 -1000ms-> 1 -1000ms-> 2 -1000ms-> 3`
 	];
 
-	const carCodeExamples: string[] = [
-		/* `const carStream:Observble<Car> = stream;
-const intervalStream:<Observble:TrafficLightsValue>;
-const buffered = carStream.pipe(buffer(intervalStream));` */
-	];
+	const carCodeExamples: string[] = [];
 
 	const freeText = `Converts a higher-order Observable into a first-order Observable by concatenating the inner Observables in order.`;
 	const exampleText = `In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output Obervable. Once the first substream is closed, second substream is subscribed and cars from it are emited to the output Obervable and so on`;

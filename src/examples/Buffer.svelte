@@ -42,9 +42,9 @@ buffered.subscribe(x => console.log(x));
 	];
 
 	let carCodeExamples = [
-		`const carStream:Observble<Car> = stream;
-const intervalStream:<Observble:TrafficLightsValue>;
-const buffered = carStream.pipe(buffer(intervalStream));`
+		`const cars:Observable<Car> = carsSource;
+const intervals:Observble<TrafficLightsValue> = trafficLightsSource;
+const buffered = cars.pipe(buffer(intervals));`
 	];
 
 	const freeText = `Buffers the source Observable values until closingNotifier emits.`;

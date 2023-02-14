@@ -98,8 +98,8 @@ switched.subscribe(x => console.log(x));
 	];
 
 	const carCodeExamples: string[] = [
-		`const carStream:Observble<number> = stream;
-carStream.pipe(switchMap((n: number) => {
+		`const cars:Observble<number> = carsSource;
+cars.pipe(switchMap((n: number) => {
   return getStreamOfCarsWithNPassengers(n);
 }))`
 	];

@@ -57,8 +57,8 @@ delayedClicks.subscribe(x => console.log(x));`
 	];
 
 	const carCodeExamples: string[] = [
-		`const carStream:Observble<Car> = stream;
-const delayedStream = carStream.pipe(delay(${streamDelay}));`
+		`const cars:Observable<Car> = carsSource;
+const delayedCars = cars.pipe(delay(${streamDelay}));`
 	];
 
 	const freeText = `Delays the emission of items from the source Observable by a given timeout or until a given Date.`;

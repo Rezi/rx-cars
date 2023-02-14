@@ -69,8 +69,8 @@ of(1, 1, 1, 2, 2, 2, 1, 1, 3, 3)
 	];
 
 	const carCodeExamples: string[] = [
-		`const carStream:Observble<Car> = stream;
-const debounced = carStream.pipe(
+		`const cars:Observable<Car> = carsSource;
+const debounced = cars.pipe(
   distinctUntilChanged((prev:Car, curr:Car) => {
     return prev.passengers === curr.passengers;
   })

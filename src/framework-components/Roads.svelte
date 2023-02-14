@@ -11,7 +11,6 @@
 	export let height: number;
 	export let roadWidth: number;
 	export let queueRoads = true;
-	export let onlyFirst = false;
 	export let rotations: number | number[] = -45;
 
 	export let roadsStream: Observable<{ items: IntervalItem[] }>;

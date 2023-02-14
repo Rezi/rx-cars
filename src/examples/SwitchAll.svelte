@@ -90,11 +90,7 @@ source
 // ...`
 	];
 
-	const carCodeExamples: string[] = [
-		/* `const carStream:Observble<Car> = stream;
-const intervalStream:<Observble:TrafficLightsValue>;
-const buffered = carStream.pipe(buffer(intervalStream));` */
-	];
+	const carCodeExamples: string[] = [];
 
 	const freeText = `Converts a higher-order Observable into a first-order Observable producing values only from the most recent observable sequence`;
 	const exampleText = `In this example, values (streams of cars) are subscribed one by one. The first substream is subscribed and its values (cars) are emited to an output Obervable. Once the second substream emit a value, first substream is unsubscribed and cars are emited to the output Obervable only from the second stream. Same repeats once value comes in the third stream, second is unsbscribed...`;

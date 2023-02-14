@@ -73,8 +73,8 @@ Optional comparison function called to test if an item is distinct from the prev
 	];
 
 	const carCodeExamples: string[] = [
-		`const carStream:Observble<Car> = stream;
-const debounced = carStream.pipe(
+		`const cars:Observable<Car> = carsSource;
+const debounced = cars.pipe(
   distinctUntilKeyChanged('passengers')
 );`
 	];

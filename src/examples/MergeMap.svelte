@@ -58,8 +58,8 @@ Maximum number of input Observables being subscribed to concurrently.`
  // continues to list a, b, c every second with respective ascending integers`
 	];
 	const carCodeExamples: string[] = [
-		`const carStream:Observble<number> = stream;
-carStream.pipe(mergeMap((n: number) => {
+		`const cars:Observble<number> = carsSource;
+cars.pipe(mergeMap((n: number) => {
   return getStreamOfCarsWithNPassengers(n);
 }))`
 	];

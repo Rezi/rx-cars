@@ -82,8 +82,8 @@ result.subscribe(value => console.log(\`'a' is \${ value }.\`));
 	];
 
 	const carCodeExamples: string[] = [
-		`const carStream:Observble<Car> = stream;
-const onlyLast = carStream.pipe(
+		`const cars:Observable<Car> = carsSource;
+const onlyLast = cars.pipe(
   take(${carsStreamDefinition.length})
   last(),
   delay(${closeDelay})
