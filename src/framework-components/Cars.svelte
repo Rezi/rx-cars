@@ -45,10 +45,8 @@
 	}
 
 	function setupCars() {
-		//if (queueCars) console.log('setup');
 		carItems = cars.pipe(
 			map((cars) => {
-				//if (queueCars) console.log(cars);
 				return cars.items;
 			}),
 			scan(
@@ -118,16 +116,14 @@
 					})
 				];
 
-				//if (queueCars) console.log(groupedItems);
-
 				return groupedItems;
 			})
 		);
 	}
 
 	function onCarsReady(cars: Observable<IntervalItems>) {
-		if (cars) {
-			!carItems && setupCars();
+		if (cars && !carItems) {
+			setupCars();
 			if (showLastCar) {
 				lastCarStream = cars.pipe(
 					filter((cars) => !!cars.items.length),

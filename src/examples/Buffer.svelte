@@ -83,7 +83,7 @@ const buffered = cars.pipe(buffer(intervals));`
 
 	function setStreams() {
 		subscriptions = prepareForSubscriptions(subscriptions);
-		const trafficLightStream = getStreamWithIntervals(lightsStreamDefinition);
+		const trafficLightStream = getStreamWithIntervals(lightsStreamDefinition).pipe(share());
 
 		controlStream = trafficLightStream.pipe(turnToAnimatedStream(), share());
 
@@ -137,7 +137,7 @@ const buffered = cars.pipe(buffer(intervals));`
 </script>
 
 {#key $resetStore}
-	{#if controlStream && $carsStream}
+	{#if controlStream && carsStream}
 		<Road x={width / 2} y={height / 2} width={roadWidth} height={height / 2}>
 			<div slot="decription-left">
 				<Description
