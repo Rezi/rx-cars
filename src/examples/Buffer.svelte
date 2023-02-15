@@ -70,7 +70,7 @@ const buffered = cars.pipe(buffer(intervals));`
 		{ delay: 3500, key: 'light' },
 		{ delay: 8000, key: 'light' },
 		{ delay: 13000, key: 'light' },
-		{ delay: 18000, key: 'light' }
+		{ delay: 18100, key: 'light' }
 	];
 
 	let controlStream: Observable<IntervalItems>;
